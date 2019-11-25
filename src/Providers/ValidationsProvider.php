@@ -129,8 +129,8 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
      */
     public function bootingCallback()
     {
-        Rules::define(config('validations.rule_property_name'), false);
-        Types::define(config('validations.field_property_name'), []);
+        Rules::define(config('validations.property_name'), []);
+        Types::define(config('validations.property_name'), []);
 
         Event::listen('metas.created', function ($meta) {
             Validations::createHandler($meta->getModelClass());

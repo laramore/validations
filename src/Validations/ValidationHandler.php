@@ -24,7 +24,7 @@ class ValidationHandler extends BaseHandler
      *
      * @var string
      */
-    protected $observerClass = Validation::class;
+    protected $observerClass = BaseValidation::class;
 
     /**
      * Add an observer to a list of observers.
@@ -104,7 +104,7 @@ class ValidationHandler extends BaseHandler
     public function getValidationErrors(BaseField $field, $value): ValidationErrorBag
     {
         $bag = new ValidationErrorBag;
-        $priority = Validation::MAX_PRIORITY;
+        $priority = BaseValidation::MAX_PRIORITY;
 
         if ($this->has($field->name)) {
             foreach ($this->all($field->name) as $validation) {

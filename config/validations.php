@@ -23,11 +23,9 @@ return [
     |
     */
 
-    'field_property_name' => 'validation_classes',
+    'property_name' => 'validation_classes',
 
-    'rule_property_name' => 'validation_class',
+    'default_priority' => Laramore\Validations\BaseValidation::MEDIUM_PRIORITY,
 
-    'rule_priority_name' => 'validation_priority',
 
-    'default_priority' => Laramore\Validations\Validation::MEDIUM_PRIORITY,
 ];

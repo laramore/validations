@@ -35,13 +35,19 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
      */
     protected $handlerClass = ValidationHandler::class;
 
-    protected function addRulesForField(BaseField $field)
+    protected function addValidationsForField(BaseField $field)
     {
         $handler = $this->getHandler($field->getMeta()->getModelClass());
-        $propertyName = config('validations.field_property_name');
+        $propertyName = config('validations.property_name');
         $defaultPriority = config('validations.default_priority');
 
-        foreach ($field->getType()->get($propertyName) as $data) {
+        $rulesValidations = \array_map(function ($rule) use ($propertyName) {
+            return $rule->get($propertyName);
+        }, $field->getRules());
+
+        $validations = \array_merge($field->getConfig($propertyName, []), $field->getType()->get($propertyName), ...\array_values($rulesValidations));
+
+        foreach ($validations as $data) {
             if (\is_string($data)) {
                 [$validationClass, $priority] = [$data, $defaultPriority];
             } else {
@@ -54,27 +60,12 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
         }
     }
 
-    protected function addRulesForFieldRules(BaseField $field)
-    {
-        $handler = $this->getHandler($field->getMeta()->getModelClass());
-        $propertyName = config('validations.rule_property_name');
-        $priorityName = config('validations.rule_priority_name');
-        $defaultPriority = config('validations.default_priority');
-
-        foreach ($field->getRules() as $rule) {
-            $validationClass = $rule->get($propertyName);
-            $priority = $rule->has($priorityName) ? $rule->get($priorityName) : $defaultPriority;
-
-            if ($validationClass && $validationClass::isFieldValid($field)) {
-                $handler->add(new $validationClass($field, $priority));
-            }
-        }
-    }
-
     protected function createFieldMethods(BaseField $field)
     {
         BaseField::macro('getValidations', function () {
-            return Validations::getHandler($this->getMeta()->getModelClass())->get($this->getName());
+            $handler = Validations::getHandler($this->getMeta()->getModelClass());
+
+            return ($handler->has($this->getName())) ? $handler->get($this->getName()) : [];
         });
 
         BaseField::macro('getValidationErrors', function ($value) {
@@ -102,8 +93,7 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
             return;
         }
 
-        $this->addRulesForField($field);
-        $this->addRulesForFieldRules($field);
         $this->createFieldMethods($field);
+        $this->addValidationsForField($field);
     }
 }
