@@ -15,9 +15,10 @@ use Illuminate\Support\Str;
 use Laramore\Fields\BaseField;
 use Laramore\Traits\HasProperties;
 use Laramore\Observers\BaseObserver;
+use Laramore\Interfaces\IsConfigurable;
 use Closure;
 
-abstract class Validation extends BaseObserver
+abstract class BaseValidation extends BaseObserver implements IsConfigurable
 {
     use HasProperties;
 
@@ -39,6 +40,29 @@ abstract class Validation extends BaseObserver
     public static function getStaticName(): string
     {
         return Str::snake((new \ReflectionClass(static::class))->getShortName());
+    }
+
+    /**
+     * Return the configuration path for this field.
+     *
+     * @param string $path
+     * @return mixed
+     */
+    public function getConfigPath(string $path=null)
+    {
+        return 'validations.configurations.'.static::class.(\is_null($path) ? '' : '.'.$path);
+    }
+
+    /**
+     * Return the configuration for this field.
+     *
+     * @param string $path
+     * @param mixed  $default
+     * @return mixed
+     */
+    public function getConfig(string $path=null, $default=null)
+    {
+        return config($this->getConfigPath($path), $default);
     }
 
     /**

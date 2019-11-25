@@ -12,7 +12,7 @@ namespace Laramore\Validations;
 
 use Laramore\Fields\BaseField;
 
-class Length extends Validation
+class Length extends BaseValidation
 {
     public function isValueValid($value): bool
     {

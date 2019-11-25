@@ -12,7 +12,7 @@ namespace Laramore\Validations;
 
 use Laramore\Fields\BaseField;
 
-class NotBlank extends Validation
+class NotBlank extends BaseValidation
 {
     public function isValueValid($value): bool
     {

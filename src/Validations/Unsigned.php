@@ -12,7 +12,7 @@ namespace Laramore\Validations;
 
 use Laramore\Fields\BaseField;
 
-class Unsigned extends Validation
+class Unsigned extends BaseValidation
 {
     public function isValueValid($value): bool
     {

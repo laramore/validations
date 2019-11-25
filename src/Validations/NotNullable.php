@@ -13,7 +13,7 @@ namespace Laramore\Validations;
 use Laramore\Facades\Rules;
 use Laramore\Fields\BaseField;
 
-class NotNullable extends Validation
+class NotNullable extends BaseValidation
 {
     public function isValueValid($value): bool
     {

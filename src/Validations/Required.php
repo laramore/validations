@@ -13,7 +13,7 @@ namespace Laramore\Validations;
 use Laramore\Facades\Rules;
 use Laramore\Fields\BaseField;
 
-class Required extends Validation
+class Required extends BaseValidation
 {
     /**
      * Indicate if the value is correct.
