@@ -27,5 +27,12 @@ return [
 
     'default_priority' => Laramore\Validations\BaseValidation::MEDIUM_PRIORITY,
 
+    'configurations' => [
+        Laramore\Validations\Type\DataTime::class => [
+            'allowed' => 'format',
+
+            'date_format' => 'Y-m-d',
+        ],
+    ],
 
 ];
