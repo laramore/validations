@@ -68,8 +68,8 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
             return ($handler->has($this->getName())) ? $handler->get($this->getName()) : [];
         });
 
-        BaseField::macro('getValidationErrors', function ($value) {
-            return Validations::getHandler($this->getMeta()->getModelClass())->getValidationErrors($this, $value);
+        BaseField::macro('getErrors', function ($value) {
+            return Validations::getHandler($this->getMeta()->getModelClass())->getErrors([$this->getName() => $value]);
         });
 
         BaseField::macro('isValid', function ($value) {

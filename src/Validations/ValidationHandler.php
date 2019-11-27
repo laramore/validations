@@ -94,34 +94,50 @@ class ValidationHandler extends BaseHandler
      */
     public function all(string $fieldName=null): array
     {
-        if (is_null($fieldName)) {
+        if (\is_null($fieldName)) {
             return $this->observers;
         }
 
         return $this->get($fieldName);
     }
 
-    public function getValidationErrors(BaseField $field, $value): ValidationErrorBag
+    public function getErrors(array $values, bool $withAllErrors=false): ValidationErrorBag
     {
         $bag = new ValidationErrorBag;
         $priority = BaseValidation::MAX_PRIORITY;
+        $validations = [];
 
-        if ($this->has($field->name)) {
-            foreach ($this->all($field->name) as $validation) {
-                // Validation can fail only with same priorities.
-                if ($priority !== $validation->getPriority()) {
-                    if ($bag->count()) {
-                        break;
-                    }
+        // Get all validations for all values keys.
+        // ex: $values = ['password' => 'password', 'name' => '1'];
+        // $validations = [validations of the field 'password' + validations of the field 'name'];
+        //
+        // The push method order validations by top priorities.
+        foreach (\array_intersect_key($this->all(), $values) as $fieldValidations) {
+            foreach ($fieldValidations as $validation) {
+                parent::push($validation, $validations);
+            }
+        }
 
-                    $priority = $validation->getPriority();
+        foreach ($validations as $validation) {
+            // When checking all validations, if a validation fails, we don't end up directly.
+            // The validations are grouped by priority. If a validation failed, we can fail after
+            // testing all validations with the same priorirty.
+            if (!$withAllErrors && $priority !== $validation->getPriority()) {
+                if ($bag->count()) {
+                    break;
                 }
 
-                if (!$validation->isValueValid($value)) {
-                    foreach ((array) $validation->getMessage() as $message) {
-                        $bag->add($validation->getName(), $message);
-                    }
-                }
+                $priority = $validation->getPriority();
+            }
+
+            $name = $validation->getField()->getName();
+            $value = $values[$name];
+
+            if (!$validation->isValueValid($value)) {
+                $bagError = new ValidationErrorBag;
+                $bagError->add($validation->getName(), $validation->getMessage());
+
+                $bag->add($name, $bagError);
             }
         }
 

@@ -18,8 +18,8 @@ return [
             'getValidations' => [
                 'name_template' => 'get^{fieldname}Validations',
             ],
-            'getValidationErrors' => [
-                'name_template' => 'get^{fieldname}ValidationErrors',
+            'getErrors' => [
+                'name_template' => 'get^{fieldname}Errors',
             ],
             'isValid' => [
                 'name_template' => 'is^{fieldname}Valid',
@@ -38,83 +38,47 @@ return [
     */
 
     'configurations' => [
-        Laramore\Fields\BelongsToMany::class => [
-            'with_validations' => false,
-        ],
         Laramore\Fields\Boolean::class => [
-            'with_validations' => true,
             'validation_classes' => [
                 [Laramore\Validations\Type\Boolean::class, $typePriority],
             ],
         ],
         Laramore\Fields\Char::class => [
-            'with_validations' => true,
             'validation_classes' => [
                 [Laramore\Validations\Type\Text::class, $typePriority],
             ],
         ],
         Laramore\Fields\Email::class => [
-            'with_validations' => true,
             'validation_classes' => [
                 [Laramore\Validations\Type\Text::class, $typePriority],
             ],
         ],
-        Laramore\Fields\Enum::class => [
-            'with_validations' => true,
-        ],
-        Laramore\Fields\Foreign::class => [
-            'with_validations' => false,
-        ],
-        Laramore\Fields\HasMany::class => [
-            'with_validations' => false,
-        ],
-        Laramore\Fields\HasManyThrough::class => [
-            'with_validations' => false,
-        ],
-        Laramore\Fields\HasOne::class => [
-            'with_validations' => false,
-        ],
         Laramore\Fields\Increment::class => [
-            'with_validations' => false,
             'validation_classes' => [
                 [Laramore\Validations\Type\Number::class, $typePriority],
             ],
         ],
         Laramore\Fields\Integer::class => [
-            'with_validations' => true,
             'validation_classes' => [
                 [Laramore\Validations\Type\Number::class, $typePriority],
             ],
         ],
-        Laramore\Fields\ManyToMany::class => [
-            'with_validations' => false,
-        ],
-        Laramore\Fields\MorphToOne::class => [
-            'with_validations' => false,
-        ],
-        Laramore\Fields\OneToOne::class => [
-            'with_validations' => false,
-        ],
         Laramore\Fields\Password::class => [
-            'with_validations' => true,
             'validation_classes' => [
                 [Laramore\Validations\Type\Text::class, $typePriority],
             ],
         ],
         Laramore\Fields\PrimaryId::class => [
-            'with_validations' => false,
             'validation_classes' => [
                 [Laramore\Validations\Type\Number::class, $typePriority],
             ],
         ],
         Laramore\Fields\Text::class => [
-            'with_validations' => true,
             'validation_classes' => [
                 [Laramore\Validations\Type\Text::class, $typePriority],
             ],
         ],
         Laramore\Fields\Timestamp::class => [
-            'with_validations' => true,
             'validation_classes' => [
                 [Laramore\Validations\Type\DataTime::class, $typePriority],
             ],
