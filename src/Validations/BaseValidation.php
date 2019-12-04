@@ -10,19 +10,21 @@
 
 namespace Laramore\Validations;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Validator as ValidatorReturn;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Contracts\Validation\Rule;
 use Laramore\Fields\BaseField;
-use Laramore\Traits\HasProperties;
 use Laramore\Observers\BaseObserver;
 use Laramore\Interfaces\IsConfigurable;
 use Closure;
 
 abstract class BaseValidation extends BaseObserver implements IsConfigurable
 {
-    use HasProperties;
-
     protected $field;
+
+    public const TYPE_PRIORITY = ((self::MAX_PRIORITY + self::HIGH_PRIORITY) / 2);
 
     /**
      * An observer needs at least a name and a Closure.
@@ -34,10 +36,15 @@ abstract class BaseValidation extends BaseObserver implements IsConfigurable
     {
         $this->setField($field);
 
-        parent::__construct(static::getStaticName(), null, $priority);
+        parent::__construct($this->getRuleName(), Closure::fromCallable([$this, 'getValidator']), $priority);
     }
 
-    public static function getStaticName(): string
+    /**
+     * Return the generated rule name.
+     *
+     * @return string
+     */
+    public function getRuleName(): string
     {
         return Str::snake((new \ReflectionClass(static::class))->getShortName());
     }
@@ -80,41 +87,45 @@ abstract class BaseValidation extends BaseObserver implements IsConfigurable
         return $this;
     }
 
-    public function getField()
+    /**
+     * Return the field which this validation is set for.
+     *
+     * @return BaseField
+     */
+    public function getField(): BaseField
     {
         return $this->field;
     }
 
     /**
-     * Return the Closure function.
-     *
-     * @return Closure
-     */
-    public function getCallback(): Closure
-    {
-        return Closure::fromCallable([$this, 'isValueValid']);
-    }
-
-    /**
-     * Indicate if the value is correct.
+     * Check if the value is correct.
      *
      * @param  mixed $value
-     * @return boolean
+     * @return ValidatorReturn
      */
-    abstract public function isValueValid($value): bool;
+    public function getValidator($value): ValidatorReturn
+    {
+        $name = $this->getField()->getName();
+
+        return Validator::make([
+            $name => $value,
+        ], [
+            $name => [$this->getValidationRule()],
+        ]);
+    }
 
     /**
      * Indicate if the field is for this validation.
      *
-     * @param  mixed $value
+     * @param  BaseField $field
      * @return boolean
      */
     abstract public static function isFieldValid(BaseField $field): bool;
 
     /**
-     * Return the error message.
+     * Return the valdation rule for validations.
      *
-     * @return array|string
+     * @return string|Rule|Closure
      */
-    abstract public function getMessage();
+    abstract public function getValidationRule();
 }
