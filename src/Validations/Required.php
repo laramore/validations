@@ -16,34 +16,23 @@ use Laramore\Fields\BaseField;
 class Required extends BaseValidation
 {
     /**
-     * Indicate if the value is correct.
-     *
-     * @param  mixed $value
-     * @return boolean
-     */
-    public function isValueValid($value): bool
-    {
-        return !\is_null($value);
-    }
-
-    /**
-     * Return the error message.
-     *
-     * @return array|string
-     */
-    public function getMessage()
-    {
-        return 'This field is required';
-    }
-
-    /**
      * Indicate if the field is for this validation.
      *
-     * @param  mixed $value
+     * @param  BaseField $field
      * @return boolean
      */
     public static function isFieldValid(BaseField $field): bool
     {
         return !$field->hasRule(Rules::nullable());
+    }
+
+    /**
+     * Return the valdation rule for validations.
+     *
+     * @return string
+     */
+    public function getValidationRule()
+    {
+        return 'required';
     }
 }

@@ -15,24 +15,24 @@ use Laramore\Fields\BaseField;
 
 class NotNullable extends BaseValidation
 {
-    public function isValueValid($value): bool
-    {
-        return !is_null($value);
-    }
-
-    public function getMessage()
-    {
-        return 'This field cannot be null.';
-    }
-
     /**
      * Indicate if the field is for this validation.
      *
-     * @param  mixed $value
+     * @param  BaseField $field
      * @return boolean
      */
     public static function isFieldValid(BaseField $field): bool
     {
         return !$field->hasRule(Rules::useCurrent());
+    }
+
+    /**
+     * Return the valdation rule for validations.
+     *
+     * @return string
+     */
+    public function getValidationRule()
+    {
+        return 'not_nullable';
     }
 }

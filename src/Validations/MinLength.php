@@ -1,6 +1,6 @@
 <?php
 /**
- * Validate that the value corresponds to a valid pattern.
+ * Validate that the value has a min length.
  *
  * @author Samy Nastuzzi <samy@nastuzzi.fr>
  *
@@ -10,11 +10,9 @@
 
 namespace Laramore\Validations;
 
-use Laramore\Fields\{
-    BaseField, Pattern as PatternField
-};
+use Laramore\Fields\BaseField;
 
-class Pattern extends BaseValidation
+class MinLength extends BaseValidation
 {
     /**
      * Indicate if the field is for this validation.
@@ -24,7 +22,7 @@ class Pattern extends BaseValidation
      */
     public static function isFieldValid(BaseField $field): bool
     {
-        return $field instanceof PatternField;
+        return \is_null($field->getProperty('minLength', false));
     }
 
     /**
@@ -34,6 +32,6 @@ class Pattern extends BaseValidation
      */
     public function getValidationRule()
     {
-        return 'regex:'.$this->getField()->getPattern();
+        return 'min:'.$this->getField()->getProperty('minLength');
     }
 }

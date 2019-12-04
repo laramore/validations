@@ -1,6 +1,6 @@
 <?php
 /**
- * Validate that the value is not blank/empty.
+ * Validate has a text value.
  *
  * @author Samy Nastuzzi <samy@nastuzzi.fr>
  *
@@ -14,24 +14,26 @@ use Laramore\Fields\BaseField;
 
 class NotBlank extends BaseValidation
 {
-    public function isValueValid($value): bool
-    {
-        return !empty(trim($value));
-    }
-
-    public function getMessage()
-    {
-        return "This field cannot be blank.";
-    }
-
     /**
      * Indicate if the field is for this validation.
      *
-     * @param  mixed $value
+     * @param  BaseField $field
      * @return boolean
      */
     public static function isFieldValid(BaseField $field): bool
     {
         return true;
+    }
+
+    /**
+     * Return the valdation rule for validations.
+     *
+     * @return string
+     */
+    public function getValidationRule()
+    {
+        return function ($value) {
+            return \count(\trim($value)) > 0;
+        };
     }
 }

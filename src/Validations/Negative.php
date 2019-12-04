@@ -1,6 +1,6 @@
 <?php
 /**
- * Validate that the value corresponds to a valid pattern.
+ * Validate that the value is negative.
  *
  * @author Samy Nastuzzi <samy@nastuzzi.fr>
  *
@@ -10,11 +10,9 @@
 
 namespace Laramore\Validations;
 
-use Laramore\Fields\{
-    BaseField, Pattern as PatternField
-};
+use Laramore\Fields\BaseField;
 
-class Pattern extends BaseValidation
+class Negative extends BaseValidation
 {
     /**
      * Indicate if the field is for this validation.
@@ -24,16 +22,18 @@ class Pattern extends BaseValidation
      */
     public static function isFieldValid(BaseField $field): bool
     {
-        return $field instanceof PatternField;
+        return true;
     }
 
     /**
      * Return the valdation rule for validations.
      *
-     * @return string
+     * @return callback
      */
     public function getValidationRule()
     {
-        return 'regex:'.$this->getField()->getPattern();
+        return function ($value) {
+            return ((integer) $value) <= 0;
+        };
     }
 }

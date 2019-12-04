@@ -14,24 +14,26 @@ use Laramore\Fields\BaseField;
 
 class Unsigned extends BaseValidation
 {
-    public function isValueValid($value): bool
-    {
-        return $value >= 0;
-    }
-
-    public function getMessage()
-    {
-        return "The value cannot be lower than 0.";
-    }
-
     /**
      * Indicate if the field is for this validation.
      *
-     * @param  mixed $value
+     * @param  BaseField $field
      * @return boolean
      */
     public static function isFieldValid(BaseField $field): bool
     {
         return true;
+    }
+
+    /**
+     * Return the valdation rule for validations.
+     *
+     * @return callback
+     */
+    public function getValidationRule()
+    {
+        return function ($value) {
+            return ((integer) $value) >= 0;
+        };
     }
 }
