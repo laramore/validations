@@ -11,7 +11,8 @@
 namespace Laramore\Validations;
 
 use Illuminate\Database\Eloquent\Model;
-use Laramore\Validations\ValidationErrorBag;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Validator as ValidatorResult;
 use Laramore\Fields\BaseField;
 use Laramore\Observers\{
     BaseObserver, BaseHandler
@@ -101,47 +102,47 @@ class ValidationHandler extends BaseHandler
         return $this->get($fieldName);
     }
 
-    public function getErrors(array $values, bool $withAllErrors=false): ValidationErrorBag
+    /**
+     * Return all rules for a specfic set of field names.
+     * @param  array $fieldnames
+     *
+     * @return array
+     */
+    public function getRules(array $fieldnames=null): array
     {
-        $bag = new ValidationErrorBag;
-        $priority = BaseValidation::MAX_PRIORITY;
-        $validations = [];
-
-        // Get all validations for all values keys.
-        // ex: $values = ['password' => 'password', 'name' => '1'];
-        // $validations = [validations of the field 'password' + validations of the field 'name'];
-        //
-        // The push method order validations by top priorities.
-        foreach (\array_intersect_key($this->all(), $values) as $fieldValidations) {
-            foreach ($fieldValidations as $validation) {
-                parent::push($validation, $validations);
-            }
+        if (\is_null($fieldnames)) {
+            $fieldValidations = $this->all();
+        } else {
+            $fieldValidations = \array_intersect_key($this->all(), \array_fill_keys($fieldnames, null));
         }
 
-        foreach ($validations as $validation) {
-            // When checking all validations, if a validation fails, we don't end up directly.
-            // The validations are grouped by priority. If a validation failed, we can fail after
-            // testing all validations with the same priorirty.
-            if (!$withAllErrors && $priority !== $validation->getPriority()) {
-                if ($bag->count()) {
-                    break;
-                }
+        return \array_map(function (array $validations) {
+            return \array_map(function (BaseValidation $validation) {
+                return $validation->getValidationRule();
+            }, $validations);
+        }, $fieldValidations);
+    }
 
-                $priority = $validation->getPriority();
-            }
+    /**
+     * Return the validator for an array of values.
+     *
+     * @param  array $values
+     * @return ValidatorResult
+     */
+    public function getValidator(array $values): ValidatorResult
+    {
+        return Validator::make($values, $this->getRules(\array_keys($values)));
+    }
 
-            $name = $validation->getField()->getName();
-            $value = $values[$name];
-
-            if (!$validation->isValueValid($value)) {
-                $bagError = new ValidationErrorBag;
-                $bagError->add($validation->getName(), $validation->getMessage());
-
-                $bag->add($name, $bagError);
-            }
-        }
-
-        return $bag;
+    /**
+     * Return all errors for an array of values.
+     *
+     * @param  array $values
+     * @return array
+     */
+    public function getErrors(array $values): array
+    {
+        return $this->getValidator($values)->errors()->all();
     }
 
     /**

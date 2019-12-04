@@ -11,9 +11,7 @@
 namespace Laramore\Validations;
 
 use Illuminate\Database\Eloquent\Model;
-use Laramore\Facades\{
-    Proxies, Validations
-};
+use Laramore\Facades\Proxies;
 use Laramore\Observers\BaseManager;
 use Laramore\Interfaces\IsALaramoreManager;
 use Laramore\Exceptions\FieldValidationException;
@@ -35,7 +33,13 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
      */
     protected $handlerClass = ValidationHandler::class;
 
-    protected function addValidationsForField(BaseField $field)
+    /**
+     * Add all validations for a specific field, based on configurations.
+     *
+     * @param BaseField $field
+     * @return void
+     */
+    protected function createValidationsForField(BaseField $field)
     {
         $handler = $this->getHandler($field->getMeta()->getModelClass());
         $propertyName = config('validations.property_name');
@@ -45,7 +49,11 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
             return $rule->get($propertyName);
         }, $field->getRules());
 
-        $validations = \array_merge($field->getConfig($propertyName, []), $field->getType()->get($propertyName), ...\array_values($rulesValidations));
+        $validations = \array_merge(
+            $field->getConfig($propertyName, []),
+            $field->getType()->get($propertyName),
+            ...\array_values($rulesValidations)
+        );
 
         foreach ($validations as $data) {
             if (\is_string($data)) {
@@ -58,42 +66,5 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
                 $handler->add(new $validationClass($field, $priority));
             }
         }
-    }
-
-    protected function createFieldMethods(BaseField $field)
-    {
-        BaseField::macro('getValidations', function () {
-            $handler = Validations::getHandler($this->getMeta()->getModelClass());
-
-            return ($handler->has($this->getName())) ? $handler->get($this->getName()) : [];
-        });
-
-        BaseField::macro('getErrors', function ($value) {
-            return Validations::getHandler($this->getMeta()->getModelClass())->getErrors([$this->getName() => $value]);
-        });
-
-        BaseField::macro('isValid', function ($value) {
-            return $this->getValidationErrors($value)->count() === 0;
-        });
-
-        BaseField::macro('check', function ($value) {
-            $errors = $this->getValidationErrors($value);
-
-            if ($errors->count()) {
-                throw new FieldValidationException($this, $errors);
-            }
-        });
-    }
-
-    public function createValidationsForField(BaseField $field)
-    {
-        $this->needsToBeUnlocked();
-
-        if ($field->getConfig('with_validations', true) === false) {
-            return;
-        }
-
-        $this->createFieldMethods($field);
-        $this->addValidationsForField($field);
     }
 }
