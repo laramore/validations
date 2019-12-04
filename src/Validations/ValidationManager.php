@@ -39,7 +39,7 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
      * @param BaseField $field
      * @return void
      */
-    protected function createValidationsForField(BaseField $field)
+    public function createValidationsForField(BaseField $field)
     {
         $handler = $this->getHandler($field->getMeta()->getModelClass());
         $propertyName = config('validations.property_name');
