@@ -25,7 +25,7 @@ return [
 
     'property_name' => 'validation_classes',
 
-    'default_priority' => Laramore\Validations\BaseValidation::MEDIUM_PRIORITY,
+    'default_priority' => Laramore\Validations\Validation::MEDIUM_PRIORITY,
 
     'configurations' => [
         Laramore\Validations\Type\DataTime::class => [
