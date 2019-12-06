@@ -24,45 +24,21 @@ use Laramore\Interfaces\{
 use Laramore\Commands\{
     MigrateClear, MigrateGenerate
 };
+use Laramore\Traits\Provider\MergesConfig;
 use Laramore\Validations\ValidationManager;
 use Laramore\Fields\BaseField;
 use Laramore\Meta;
 
 class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
 {
+	use MergesConfig;
+
     /**
      * Validation manager.
      *
      * @var array
      */
     protected static $managers;
-
-    /**
-     * Define all proxy files to merge into config.
-     *
-     * @var array
-     */
-    protected static $commonProxies = [
-        'check', 'getErrors', 'getValidations', 'isValid',
-    ];
-
-    /**
-     * Define all rules to which we add validation classes.
-     *
-     * @var array
-     */
-    protected static $rules = [
-        'accept_username', 'negative', 'not_blank', 'not_nullable', 'not_zero', 'required', 'restrict_domains', 'unsigned',
-    ];
-
-    /**
-     * Define all types to which we add validation classes.
-     *
-     * @var array
-     */
-    protected static $types = [
-        'boolean', 'char', 'email', 'increment', 'integer', 'password', 'primary_id', 'text', 'timestamp',
-    ];
 
     /**
      * Before booting, create our definition for migrations.
@@ -72,29 +48,20 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/validations.php', 'validations',
+            __DIR__.'/../../config/fields.php', 'fields',
         );
 
-        foreach (static::$commonProxies as $proxy) {
-            $this->mergeConfigFrom(
-                __DIR__."/../../config/fields/proxies/common/$proxy.php",
-                "fields.proxies.common.$proxy",
-            );
-        }
+        $this->mergeConfigFrom(
+            __DIR__.'/../../config/rules.php', 'rules',
+        );
 
-        foreach (static::$rules as $rule) {
-            $this->mergeConfigFrom(
-                __DIR__."/../../config/rules/configurations/$rule/validation_classes.php",
-                "rules.configurations.$rule.validation_classes",
-            );
-        }
+        $this->mergeConfigFrom(
+            __DIR__.'/../../config/types.php', 'types',
+        );
 
-        foreach (static::$types as $type) {
-            $this->mergeConfigFrom(
-                __DIR__."/../../config/types/configurations/$type/validation_classes.php",
-                "types.configurations.$type.validation_classes",
-            );
-        }
+        $this->mergeConfigFrom(
+            __DIR__.'/../../config/validations.php', 'validations',
+        );
 
         $this->app->singleton('Validations', function() {
             return static::getManager();
@@ -114,26 +81,6 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
         $this->publishes([
             __DIR__.'/../../config/validations.php' => config_path('validations.php'),
         ]);
-
-         $this->publishes(\array_map(function ($proxy) {
-            return [
-                __DIR__."/../../config/fields/proxies/common/$proxy.php" => config_path("fields/proxies/common/$proxy.php"),
-            ];
-         }, static::$commonProxies));
-
-        $this->publishes(\array_map(function ($type) {
-            return [
-                __DIR__."/../../config/types/configurations/$type/validation_classes.php"
-                => config_path("types/configurations/$type/validation_classes.php"),
-            ];
-        }, static::$types));
-
-        $this->publishes(\array_map(function ($rule) {
-            return [
-                __DIR__."/../../config/rules/configurations/$rule/validation_classes.php"
-                => config_path("rules/configurations/$rule/validation_classes.php"),
-            ];
-        }, static::$types));
     }
 
     /**
