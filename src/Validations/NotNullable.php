@@ -29,10 +29,12 @@ class NotNullable extends BaseValidation
     /**
      * Return the valdation rule for validations.
      *
-     * @return string
+     * @return callback
      */
     public function getValidationRule()
     {
-        return 'not_nullable';
+        return function ($value): bool {
+            return !\is_null($value);
+        };
     }
 }

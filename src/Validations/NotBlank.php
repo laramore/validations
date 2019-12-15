@@ -28,11 +28,11 @@ class NotBlank extends BaseValidation
     /**
      * Return the valdation rule for validations.
      *
-     * @return string
+     * @return callback
      */
     public function getValidationRule()
     {
-        return function ($value) {
+        return function ($value): bool {
             return \count(\trim($value)) > 0;
         };
     }

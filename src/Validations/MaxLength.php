@@ -22,7 +22,7 @@ class MaxLength extends BaseValidation
      */
     public static function isFieldValid(BaseField $field): bool
     {
-        return \is_null($field->getProperty('maxLength', false));
+        return !\is_null($field->getProperty('maxLength', false));
     }
 
     /**

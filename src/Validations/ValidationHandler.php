@@ -10,10 +10,8 @@
 
 namespace Laramore\Validations;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Validator as ValidatorResult;
-use Laramore\Fields\BaseField;
 use Laramore\Observers\{
     BaseObserver, BaseHandler
 };
@@ -104,8 +102,8 @@ class ValidationHandler extends BaseHandler
 
     /**
      * Return all rules for a specfic set of field names.
-     * @param  array $fieldnames
      *
+     * @param  array $fieldnames
      * @return array
      */
     public function getRules(array $fieldnames=null): array

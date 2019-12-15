@@ -32,7 +32,7 @@ class NotZero extends BaseValidation
      */
     public function getValidationRule()
     {
-        return function ($value) {
+        return function ($value): bool {
             return ((integer) $value) !== 0;
         };
     }
