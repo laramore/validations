@@ -95,37 +95,93 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
                 [$validationClass, $priority] = [$data[0], ($data[1] ?? $defaultPriority)];
             }
 
-            if ($validationClass && $validationClass::isConstraintValid($constraint) && $validationClass::isFieldValid($field)) {
+            if ($validationClass && $validationClass::isConstraintValid($constraint)
+                && $validationClass::isFieldValid($field)) {
                 $handler->add($validationClass::validationConstraint($constraint, $priority));
             }
         }
     }
 
-    public function validateForbidden($attribute, $value, $parameters, $validator)
+    /**
+     * Validate unsigned validation rule.
+     *
+     * @param mixed $attribute
+     * @param mixed $value
+     * @param mixed $parameters
+     * @param mixed $validator
+     *
+     * @return boolean
+     */
+    public function validateForbidden($attribute, $value, $parameters, $validator): bool
     {
         return false;
     }
 
-    public function validateNegative($attribute, $value, $parameters, $validator)
+    /**
+     * Validate negative validation rule.
+     *
+     * @param mixed $attribute
+     * @param mixed $value
+     * @param mixed $parameters
+     * @param mixed $validator
+     *
+     * @return boolean
+     */
+    public function validateNegative($attribute, $value, $parameters, $validator): bool
     {
         return ((int) $value) <= 0;
     }
 
-    public function validateNotNullable($attribute, $value, $parameters, $validator)
+    /**
+     * Validate not nullable validation rule.
+     *
+     * @param mixed $attribute
+     * @param mixed $value
+     * @param mixed $parameters
+     * @param mixed $validator
+     *
+     * @return boolean
+     */
+    public function validateNotNullable($attribute, $value, $parameters, $validator): bool
     {
         return !\is_null($value);
     }
 
-    public function validateNotZero($attribute, $value, $parameters, $validator)
+    /**
+     * Validate not zero validation rule.
+     *
+     * @param mixed $attribute
+     * @param mixed $value
+     * @param mixed $parameters
+     * @param mixed $validator
+     *
+     * @return boolean
+     */
+    public function validateNotZero($attribute, $value, $parameters, $validator): bool
     {
         return ((int) $value) !== 0;
     }
 
-    public function validateUnsigned($attribute, $value, $parameters, $validator)
+    /**
+     * Validate forbidden validation rule.
+     *
+     * @param mixed $attribute
+     * @param mixed $value
+     * @param mixed $parameters
+     * @param mixed $validator
+     *
+     * @return boolean
+     */
+    public function validateUnsigned($attribute, $value, $parameters, $validator): bool
     {
         return ((int) $value) >= 0;
     }
 
+    /**
+     * Extend multiple validation rules in validator.
+     *
+     * @return void
+     */
     public function extendValidatorRules()
     {
         foreach ($this->validatorRules as $validatorRule) {

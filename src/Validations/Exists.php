@@ -30,7 +30,7 @@ class Exists extends BaseConstraintValidation
     /**
      * Indicate if the field is for this validation.
      *
-     * @param  BaseField $field
+     * @param  BaseConstraint $constraint
      * @return boolean
      */
     public static function isConstraintValid(BaseConstraint $constraint): bool

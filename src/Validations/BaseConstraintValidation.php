@@ -16,6 +16,14 @@ abstract class BaseConstraintValidation extends BaseValidation
 {
     protected $constraint;
 
+    /**
+     * Generate a new constraint validation based on a constraint.
+     *
+     * @param BaseConstraint $constraint
+     * @param integer        $priority
+     *
+     * @return static
+     */
     public static function validationConstraint(BaseConstraint $constraint, int $priority=self::MEDIUM_PRIORITY)
     {
         $validation = new static($constraint->getMainAttribute(), $priority);

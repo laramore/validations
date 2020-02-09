@@ -45,7 +45,7 @@ abstract class BaseValidation extends BaseObserver implements IsConfigurable
      * @param BaseField $field
      * @param integer   $priority
      *
-     * @return void
+     * @return static
      */
     public static function validation(BaseField $field, int $priority=self::MEDIUM_PRIORITY)
     {
