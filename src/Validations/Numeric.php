@@ -28,9 +28,10 @@ class Numeric extends BaseValidation
     /**
      * Return the valdation rule for validations.
      *
+     * @param array<string,mixed> $data
      * @return string
      */
-    public function getValidationRule()
+    public function getValidationRule(array $data)
     {
         return 'numeric';
     }

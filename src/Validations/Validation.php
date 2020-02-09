@@ -11,11 +11,13 @@
 namespace Laramore\Validations;
 
 use Laramore\Fields\BaseField;
-use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Contracts\Validation\Rule as ValidationRule;
 use Closure;
 
 class Validation extends BaseValidation
 {
+    public const TYPE_PRIORITY = ((self::MAX_PRIORITY + self::HIGH_PRIORITY) / 2);
+
     protected $rule;
 
     /**
@@ -81,9 +83,10 @@ class Validation extends BaseValidation
     /**
      * Return the valdation rule for validations.
      *
-     * @return string|Rule|Closure|callback
+     * @param array<string,mixed> $data
+     * @return string|ValidationRule|Closure|callback
      */
-    public function getValidationRule()
+    public function getValidationRule(array $data)
     {
         return $this->getRule();
     }

@@ -10,7 +10,7 @@
 
 namespace Laramore\Validations;
 
-use Laramore\Facades\Rules;
+use Laramore\Facades\Rule;
 use Laramore\Fields\BaseField;
 
 class NotNullable extends BaseValidation
@@ -23,17 +23,18 @@ class NotNullable extends BaseValidation
      */
     public static function isFieldValid(BaseField $field): bool
     {
-        return !$field->hasRule(Rules::useCurrent());
+        return !$field->hasRule(Rule::useCurrent());
     }
 
     /**
      * Return the valdation rule for validations.
      *
+     * @param array<string,mixed> $data
      * @return callback
      */
-    public function getValidationRule()
+    public function getValidationRule(array $data)
     {
-        return function ($value): bool {
+        return function ($name, $value): bool {
             return !\is_null($value);
         };
     }

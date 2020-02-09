@@ -22,15 +22,16 @@ class MinLength extends BaseValidation
      */
     public static function isFieldValid(BaseField $field): bool
     {
-        return !\is_null($field->getProperty('minLength', false));
+        return $field->hasProperty('minLength');
     }
 
     /**
      * Return the valdation rule for validations.
      *
+     * @param array<string,mixed> $data
      * @return string
      */
-    public function getValidationRule()
+    public function getValidationRule(array $data)
     {
         return 'min:'.$this->getField()->getProperty('minLength');
     }

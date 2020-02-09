@@ -10,7 +10,7 @@
 
 namespace Laramore\Validations;
 
-use Laramore\Facades\Rules;
+use Laramore\Facades\Rule;
 use Laramore\Fields\BaseField;
 
 class Required extends BaseValidation
@@ -23,15 +23,16 @@ class Required extends BaseValidation
      */
     public static function isFieldValid(BaseField $field): bool
     {
-        return !$field->hasRule(Rules::nullable());
+        return !$field->hasRule(Rule::nullable());
     }
 
     /**
      * Return the valdation rule for validations.
      *
+     * @param array<string,mixed> $data
      * @return string
      */
-    public function getValidationRule()
+    public function getValidationRule(array $data)
     {
         return 'required';
     }
