@@ -13,8 +13,7 @@ namespace Laramore\Validations;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Validator as ValidatorReturn;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Validation\Rule;
+use Illuminate\Contracts\Validation\Rule as ValidationRule;
 use Laramore\Fields\BaseField;
 use Laramore\Observers\BaseObserver;
 use Laramore\Interfaces\IsConfigurable;
@@ -25,6 +24,7 @@ abstract class BaseValidation extends BaseObserver implements IsConfigurable
     protected $field;
 
     public const TYPE_PRIORITY = ((self::MAX_PRIORITY + self::HIGH_PRIORITY) / 2);
+    public const CONSTRAINT_PRIORITY = ((self::MIN_PRIORITY + self::LOW_PRIORITY) / 2);
 
     /**
      * An observer needs at least a name and a Closure.
@@ -32,11 +32,24 @@ abstract class BaseValidation extends BaseObserver implements IsConfigurable
      * @param BaseField $field
      * @param integer   $priority
      */
-    public function __construct(BaseField $field, int $priority=self::MEDIUM_PRIORITY)
+    protected function __construct(BaseField $field, int $priority=self::MEDIUM_PRIORITY)
     {
         $this->setField($field);
 
         parent::__construct($this->getRuleName(), Closure::fromCallable([$this, 'getValidator']), $priority);
+    }
+
+    /**
+     * Generate a validation.
+     *
+     * @param BaseField $field
+     * @param integer   $priority
+     *
+     * @return void
+     */
+    public static function validation(BaseField $field, int $priority=self::MEDIUM_PRIORITY)
+    {
+        return new static($field, $priority);
     }
 
     /**
@@ -57,7 +70,9 @@ abstract class BaseValidation extends BaseObserver implements IsConfigurable
      */
     public function getConfigPath(string $path=null)
     {
-        return 'validations.configurations.'.static::class.(\is_null($path) ? '' : '.'.$path);
+        $name = Str::snake((new \ReflectionClass(static::class))->getShortName());
+
+        return 'validations.configurations.'.$name.(\is_null($path) ? '' : '.'.$path);
     }
 
     /**
@@ -125,7 +140,8 @@ abstract class BaseValidation extends BaseObserver implements IsConfigurable
     /**
      * Return the valdation rule for validations.
      *
-     * @return string|Rule|Closure
+     * @param array<string,mixed> $data
+     * @return string|ValidationRule|Closure|callback
      */
-    abstract public function getValidationRule();
+    abstract public function getValidationRule(array $data);
 }
