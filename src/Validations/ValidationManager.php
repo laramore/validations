@@ -11,11 +11,10 @@
 namespace Laramore\Validations;
 
 use Illuminate\Database\Eloquent\Model;
-use Laramore\Facades\Proxies;
 use Laramore\Observers\BaseManager;
 use Laramore\Interfaces\IsALaramoreManager;
-use Laramore\Exceptions\FieldValidationException;
 use Laramore\Fields\BaseField;
+use Laramore\Fields\Constraint\BaseConstraint;
 
 class ValidationManager extends BaseManager implements IsALaramoreManager
 {
@@ -63,7 +62,34 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
             }
 
             if ($validationClass && $validationClass::isFieldValid($field)) {
-                $handler->add(new $validationClass($field, $priority));
+                $handler->add($validationClass::validation($field, $priority));
+            }
+        }
+    }
+
+    /**
+     * Add all validations for a specific constraint, based on configurations.
+     *
+     * @param BaseConstraint $constraint
+     * @return void
+     */
+    public function createValidationsForConstraint(BaseConstraint $constraint)
+    {
+        $field = $constraint->getMainAttribute();
+        $handler = $this->getHandler($field->getMeta()->getModelClass());
+        $propertyName = config('validations.property_name');
+        $defaultPriority = config('validations.default_priority');
+        $validations = $constraint->getConfig($propertyName, []);
+
+        foreach ($validations as $data) {
+            if (\is_string($data)) {
+                [$validationClass, $priority] = [$data, $defaultPriority];
+            } else {
+                [$validationClass, $priority] = [$data[0], ($data[1] ?? $defaultPriority)];
+            }
+
+            if ($validationClass && $validationClass::isConstraintValid($constraint) && $validationClass::isFieldValid($field)) {
+                $handler->add($validationClass::validationConstraint($constraint, $priority));
             }
         }
     }
