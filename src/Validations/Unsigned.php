@@ -29,12 +29,10 @@ class Unsigned extends BaseValidation
      * Return the valdation rule for validations.
      *
      * @param array<string,mixed> $data
-     * @return callback
+     * @return string
      */
     public function getValidationRule(array $data)
     {
-        return function ($name, $value): bool {
-            return ((integer) $value) >= 0;
-        };
+        return 'unsigned';
     }
 }

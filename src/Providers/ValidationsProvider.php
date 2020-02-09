@@ -142,6 +142,8 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
             return Validations::getHandler($this->getMeta()->getModelClass())
                 ->getValidator([$this->getName() => $value])->passes();
         });
+
+        Validations::extendValidatorRules();
     }
 
     /**

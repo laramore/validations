@@ -11,6 +11,9 @@
 namespace Laramore\Validations;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\{
+    Str, Facades\Validator
+};
 use Laramore\Observers\BaseManager;
 use Laramore\Interfaces\IsALaramoreManager;
 use Laramore\Fields\BaseField;
@@ -31,6 +34,10 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
      * @var string
      */
     protected $handlerClass = ValidationHandler::class;
+
+    protected $validatorRules = [
+        'forbidden', 'negative', 'not_nullable', 'not_zero', 'unsigned',
+    ];
 
     /**
      * Add all validations for a specific field, based on configurations.
@@ -91,6 +98,38 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
             if ($validationClass && $validationClass::isConstraintValid($constraint) && $validationClass::isFieldValid($field)) {
                 $handler->add($validationClass::validationConstraint($constraint, $priority));
             }
+        }
+    }
+
+    public function validateForbidden($attribute, $value, $parameters, $validator)
+    {
+        return false;
+    }
+
+    public function validateNegative($attribute, $value, $parameters, $validator)
+    {
+        return ((int) $value) <= 0;
+    }
+
+    public function validateNotNullable($attribute, $value, $parameters, $validator)
+    {
+        return !\is_null($value);
+    }
+
+    public function validateNotZero($attribute, $value, $parameters, $validator)
+    {
+        return ((int) $value) !== 0;
+    }
+
+    public function validateUnsigned($attribute, $value, $parameters, $validator)
+    {
+        return ((int) $value) >= 0;
+    }
+
+    public function extendValidatorRules()
+    {
+        foreach ($this->validatorRules as $validatorRule) {
+            Validator::extend($validatorRule, [$this, 'validate'.Str::studly($validatorRule)]);
         }
     }
 }
