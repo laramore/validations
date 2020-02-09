@@ -41,17 +41,7 @@ return [
             'validation_classes' => [
                 Laramore\Validations\NotBlank::class,
             ],
-        ],
-        'restrict_domains' => [
-            'validation_classes' => [
-                Laramore\Validations\RestrictDomains::class,
-            ],
-        ],
-        'accept_username' => [
-            'validation_classes' => [
-                Laramore\Validations\AcceptUsername::class,
-            ],
-        ],
+        ]
     ],
 
 ];

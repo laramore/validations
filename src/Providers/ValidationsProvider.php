@@ -11,34 +11,20 @@
 namespace Laramore\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\{
-	DB, Event
-};
-use Illuminate\Database\Validations\Migrator;
+use Illuminate\Support\Facades\Event;
 use Laramore\Facades\{
-	Validations, Rules, Types
+	Validations, Rule, Type
 };
 use Laramore\Interfaces\{
     IsALaramoreManager, IsALaramoreProvider
 };
-use Laramore\Commands\{
-    MigrateClear, MigrateGenerate
-};
 use Laramore\Traits\Provider\MergesConfig;
-use Laramore\Validations\ValidationManager;
 use Laramore\Fields\BaseField;
 use Laramore\Meta;
 
 class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
 {
-	use MergesConfig;
-
-    /**
-     * Validation manager.
-     *
-     * @var array
-     */
-    protected static $managers;
+    use MergesConfig;
 
     /**
      * Before booting, create our definition for migrations.
@@ -48,15 +34,24 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/fields.php', 'fields',
+            __DIR__.'/../../config/field/configurations.php',
+            'field.configurations',
+        );
+        $this->mergeConfigFrom(
+            __DIR__.'/../../config/field/constraints.php',
+            'field.constraints',
+        );
+        $this->mergeConfigFrom(
+            __DIR__.'/../../config/field/proxies.php',
+            'field.proxies',
         );
 
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/rules.php', 'rules',
+            __DIR__.'/../../config/rule.php', 'rule',
         );
 
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/types.php', 'types',
+            __DIR__.'/../../config/type.php', 'type',
         );
 
         $this->mergeConfigFrom(
@@ -64,7 +59,7 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
         );
 
         $this->app->singleton('Validations', function() {
-            return static::getManager();
+            return static::generateManager();
         });
 
         $this->app->booting([$this, 'bootingCallback']);
@@ -96,30 +91,13 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
     /**
      * Generate the corresponded manager.
      *
-     * @param  string $key
      * @return IsALaramoreManager
      */
-    public static function generateManager(string $key): IsALaramoreManager
+    public static function generateManager(): IsALaramoreManager
     {
         $class = config('validations.manager');
 
-        return static::$managers[$key] = new $class(static::getDefaults());
-    }
-
-    /**
-     * Return the generated manager for this provider.
-     *
-     * @return IsALaramoreManager
-     */
-    public static function getManager(): IsALaramoreManager
-    {
-        $appHash = \spl_object_hash(app());
-
-        if (!isset(static::$managers[$appHash])) {
-            return static::generateManager($appHash);
-        }
-
-        return static::$managers[$appHash];
+        return new $class(static::getDefaults());
     }
 
     /**
@@ -130,8 +108,8 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
      */
     public function bootingCallback()
     {
-        Rules::define(config('validations.property_name'), []);
-        Types::define(config('validations.property_name'), []);
+        Rule::define(config('validations.property_name'), []);
+        Type::define(config('validations.property_name'), []);
 
         Event::listen('metas.created', function ($meta) {
             Validations::createHandler($meta->getModelClass());
@@ -139,6 +117,10 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
 
         Event::listen('fields.locked', function ($field) {
             Validations::createValidationsForField($field);
+        });
+
+        Event::listen('constraints.locked', function ($constraint) {
+            Validations::createValidationsForConstraint($constraint);
         });
 
         Meta::macro('getValidationHandler', function () {
@@ -153,12 +135,12 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
 
         BaseField::macro('getErrors', function ($value) {
             return Validations::getHandler($this->getMeta()->getModelClass())
-            ->getErrors([$this->getName() => $value]);
+                ->getErrors([$this->getName() => $value]);
         });
 
         BaseField::macro('isValid', function ($value) {
             return Validations::getHandler($this->getMeta()->getModelClass())
-            ->getValidator([$this->getName() => $value])->passes();
+                ->getValidator([$this->getName() => $value])->passes();
         });
     }
 
@@ -169,6 +151,6 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
      */
     public function bootedCallback()
     {
-        static::getManager()->lock();
+        Validations::lock();
     }
 }
