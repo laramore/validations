@@ -10,7 +10,9 @@
 
 namespace Laramore\Validations;
 
-use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\{
+    Arr, Facades\Validator
+};
 use Illuminate\Validation\Validator as ValidatorResult;
 use Laramore\Observers\{
     BaseObserver, BaseHandler
@@ -103,20 +105,27 @@ class ValidationHandler extends BaseHandler
     /**
      * Return all rules for a specfic set of field names.
      *
-     * @param  array $fieldnames
+     * @param  array $values Associative fieldname => value or only fieldnames.
      * @return array
      */
-    public function getRules(array $fieldnames=null): array
+    public function getRules(array $values=null): array
     {
-        if (\is_null($fieldnames)) {
-            $fieldValidations = $this->all();
+        if (!Arr::isAssoc($values)) {
+            $values = \array_fill_keys($values, null);
+            $rulesData = [];
         } else {
-            $fieldValidations = \array_intersect_key($this->all(), \array_fill_keys($fieldnames, null));
+            $rulesData = $values;
         }
 
-        return \array_map(function (array $validations) {
-            return \array_map(function (BaseValidation $validation) {
-                return $validation->getValidationRule();
+        if (\is_null($values)) {
+            $fieldValidations = $this->all();
+        } else {
+            $fieldValidations = \array_intersect_key($this->all(), $values);
+        }
+
+        return \array_map(function (array $validations) use ($rulesData) {
+            return \array_map(function (BaseValidation $validation) use ($rulesData) {
+                return $validation->getValidationRule($rulesData);
             }, $validations);
         }, $fieldValidations);
     }
@@ -129,7 +138,7 @@ class ValidationHandler extends BaseHandler
      */
     public function getValidator(array $values): ValidatorResult
     {
-        return Validator::make($values, $this->getRules(\array_keys($values)));
+        return Validator::make($values, $this->getRules($values));
     }
 
     /**
