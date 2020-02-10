@@ -72,7 +72,7 @@ abstract class BaseValidation extends BaseObserver implements IsConfigurable
     {
         $name = Str::snake((new \ReflectionClass(static::class))->getShortName());
 
-        return 'validations.configurations.'.$name.(\is_null($path) ? '' : '.'.$path);
+        return 'validation.configurations.'.$name.(\is_null($path) ? '' : '.'.$path);
     }
 
     /**

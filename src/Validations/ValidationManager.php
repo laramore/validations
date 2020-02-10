@@ -48,8 +48,8 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
     public function createValidationsForField(BaseField $field)
     {
         $handler = $this->getHandler($field->getMeta()->getModelClass());
-        $propertyName = config('validations.property_name');
-        $defaultPriority = config('validations.default_priority');
+        $propertyName = config('validation.property_name');
+        $defaultPriority = config('validation.default_priority');
 
         $rulesValidations = \array_map(function ($rule) use ($propertyName) {
             return $rule->get($propertyName);
@@ -84,8 +84,8 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
     {
         $field = $constraint->getMainAttribute();
         $handler = $this->getHandler($field->getMeta()->getModelClass());
-        $propertyName = config('validations.property_name');
-        $defaultPriority = config('validations.default_priority');
+        $propertyName = config('validation.property_name');
+        $defaultPriority = config('validation.default_priority');
         $validations = $constraint->getConfig($propertyName, []);
 
         foreach ($validations as $data) {

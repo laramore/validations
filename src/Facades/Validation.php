@@ -1,6 +1,6 @@
 <?php
 /**
- * Add a facade for the Validations.
+ * Add a facade for the Validation.
  *
  * @author Samy Nastuzzi <samy@nastuzzi.fr>
  *
@@ -12,7 +12,7 @@ namespace Laramore\Facades;
 
 use Illuminate\Support\Facades\Facade;
 
-class Validations extends Facade
+class Validation extends Facade
 {
     /**
      * Give the name of the accessor.
@@ -21,6 +21,6 @@ class Validations extends Facade
      */
     protected static function getFacadeAccessor()
     {
-        return 'Validations';
+        return 'Validation';
     }
 }

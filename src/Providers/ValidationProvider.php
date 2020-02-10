@@ -13,7 +13,7 @@ namespace Laramore\Providers;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Event;
 use Laramore\Facades\{
-	Validations, Rule, Type
+	Validation, Rule, Type
 };
 use Laramore\Interfaces\{
     IsALaramoreManager, IsALaramoreProvider
@@ -22,7 +22,7 @@ use Laramore\Traits\Provider\MergesConfig;
 use Laramore\Fields\BaseField;
 use Laramore\Meta;
 
-class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
+class ValidationProvider extends ServiceProvider implements IsALaramoreProvider
 {
     use MergesConfig;
 
@@ -55,10 +55,10 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
         );
 
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/validations.php', 'validations',
+            __DIR__.'/../../config/validation.php', 'validation',
         );
 
-        $this->app->singleton('Validations', function() {
+        $this->app->singleton('Validation', function() {
             return static::generateManager();
         });
 
@@ -74,7 +74,7 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
     public function boot()
     {
         $this->publishes([
-            __DIR__.'/../../config/validations.php' => config_path('validations.php'),
+            __DIR__.'/../../config/validation.php' => config_path('validation.php'),
         ]);
     }
 
@@ -85,7 +85,7 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
      */
     public static function getDefaults(): array
     {
-        return config('validations.configurations', []);
+        return config('validation.configurations', []);
     }
 
     /**
@@ -95,7 +95,7 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
      */
     public static function generateManager(): IsALaramoreManager
     {
-        $class = config('validations.manager');
+        $class = config('validation.manager');
 
         return new $class(static::getDefaults());
     }
@@ -108,42 +108,42 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
      */
     public function bootingCallback()
     {
-        Rule::define(config('validations.property_name'), []);
-        Type::define(config('validations.property_name'), []);
+        Rule::define(config('validation.property_name'), []);
+        Type::define(config('validation.property_name'), []);
 
         Event::listen('metas.created', function ($meta) {
-            Validations::createHandler($meta->getModelClass());
+            Validation::createHandler($meta->getModelClass());
         });
 
         Event::listen('fields.locked', function ($field) {
-            Validations::createValidationsForField($field);
+            Validation::createValidationsForField($field);
         });
 
         Event::listen('constraints.locked', function ($constraint) {
-            Validations::createValidationsForConstraint($constraint);
+            Validation::createValidationsForConstraint($constraint);
         });
 
         Meta::macro('getValidationHandler', function () {
-            return Validations::getHandler($this->getModelClass());
+            return Validation::getHandler($this->getModelClass());
         });
 
         BaseField::macro('getValidations', function () {
-            $handler = Validations::getHandler($this->getMeta()->getModelClass());
+            $handler = Validation::getHandler($this->getMeta()->getModelClass());
 
             return ($handler->has($this->getName())) ? $handler->get($this->getName()) : [];
         });
 
         BaseField::macro('getErrors', function ($value) {
-            return Validations::getHandler($this->getMeta()->getModelClass())
+            return Validation::getHandler($this->getMeta()->getModelClass())
                 ->getErrors([$this->getName() => $value]);
         });
 
         BaseField::macro('isValid', function ($value) {
-            return Validations::getHandler($this->getMeta()->getModelClass())
+            return Validation::getHandler($this->getMeta()->getModelClass())
                 ->getValidator([$this->getName() => $value])->passes();
         });
 
-        Validations::extendValidatorRules();
+        Validation::extendValidatorRules();
     }
 
     /**
@@ -153,6 +153,6 @@ class ValidationsProvider extends ServiceProvider implements IsALaramoreProvider
      */
     public function bootedCallback()
     {
-        Validations::lock();
+        Validation::lock();
     }
 }

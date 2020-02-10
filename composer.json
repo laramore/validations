@@ -51,7 +51,7 @@
                 "Laramore\\Providers\\ValidationsProvider"
             ],
             "alaises": {
-                "Validations": "Laramore\\Facades\\Validations"
+                "Validation": "Laramore\\Facades\\Validation"
             }
         }
     }
