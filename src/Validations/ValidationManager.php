@@ -14,7 +14,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\{
     Str, Facades\Validator
 };
-use Laramore\Observers\BaseManager;
+use Laramore\Observers\{
+    BaseManager, BaseHandler
+};
 use Laramore\Interfaces\IsALaramoreManager;
 use Laramore\Fields\BaseField;
 use Laramore\Fields\Constraint\BaseConstraint;
@@ -38,6 +40,49 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
     protected $validatorRules = [
         'forbidden', 'negative', 'not_nullable', 'not_zero', 'unsigned',
     ];
+
+    /**
+     * Generate on demand a validation handler for a specific model class.
+     *
+     * @param string $modelClass
+     *
+     * @return BaseHandler
+     */
+    protected function generateHandler(string $modelClass): BaseHandler
+    {
+        $this->locked = false;
+        $handler = $this->createHandler($modelClass);
+        $this->locked = true;
+
+        $meta = $modelClass::getMeta();
+
+        foreach ($meta->getFields() as $field) {
+            $this->createValidationsForField($field);
+        }
+
+        foreach ($meta->getConstraintHandler()->all() as $constraint) {
+            $this->createValidationsForConstraint($constraint);
+        }
+
+        $handler->lock();
+
+        return $handler;
+    }
+
+    /**
+     * Return the validation handler for the given model class.
+     *
+     * @param  string $modelClass
+     * @return BaseHandler
+     */
+    public function getHandler(string $modelClass): BaseHandler
+    {
+        if (!$this->hasHandler($modelClass)) {
+            return $this->generateHandler($modelClass);
+        }
+
+        return $this->handlers[$modelClass];
+    }
 
     /**
      * Add all validations for a specific field, based on configurations.
