@@ -10,7 +10,7 @@
     },
     "require": {
         "php": ">=7.0.8",
-        "laramore/laramore": "^0.7.1"
+        "laramore/laramore": "^0.8.0"
     },
     "authors": [
         {
@@ -50,7 +50,7 @@
             "providers": [
                 "Laramore\\Providers\\ValidationsProvider"
             ],
-            "alaises": {
+            "aliases": {
                 "Validation": "Laramore\\Facades\\Validation"
             }
         }

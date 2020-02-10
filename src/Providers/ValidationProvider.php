@@ -111,18 +111,18 @@ class ValidationProvider extends ServiceProvider implements IsALaramoreProvider
         Rule::define(config('validation.property_name'), []);
         Type::define(config('validation.property_name'), []);
 
-        Event::listen('metas.created', function ($meta) {
-            Validation::createHandler($meta->getModelClass());
-        });
+        $this->addMacros();
 
-        Event::listen('fields.locked', function ($field) {
-            Validation::createValidationsForField($field);
-        });
+        Validation::extendValidatorRules();
+    }
 
-        Event::listen('constraints.locked', function ($constraint) {
-            Validation::createValidationsForConstraint($constraint);
-        });
-
+    /**
+     * Add all required macros for validations.
+     *
+     * @return void
+     */
+    protected function addMacros()
+    {
         Meta::macro('getValidationHandler', function () {
             return Validation::getHandler($this->getModelClass());
         });
@@ -142,8 +142,6 @@ class ValidationProvider extends ServiceProvider implements IsALaramoreProvider
             return Validation::getHandler($this->getMeta()->getModelClass())
                 ->getValidator([$this->getName() => $value])->passes();
         });
-
-        Validation::extendValidatorRules();
     }
 
     /**
