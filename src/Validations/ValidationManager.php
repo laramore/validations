@@ -42,6 +42,49 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
     ];
 
     /**
+     * Generate on demand a validation handler.
+     *
+     * @param string $modelClass
+     *
+     * @return BaseHandler
+     */
+    protected function generateHandler(string $modelClass): BaseHandler
+    {
+        $this->locked = false;
+        $handler = $this->createHandler($modelClass);
+        $this->locked = true;
+
+        $meta = $modelClass::getMeta();
+
+        foreach ($meta->getFields() as $field) {
+            $this->createValidationsForField($field);
+        }
+
+        foreach ($meta->getConstraintHandler()->all() as $constraint) {
+            $this->createValidationsForConstraint($constraint);
+        }
+
+        $handler->lock();
+
+        return $handler;
+    }
+
+    /**
+     * Return the observable handler for the given observable class.
+     *
+     * @param  string $modelClass
+     * @return BaseHandler
+     */
+    public function getHandler(string $modelClass): BaseHandler
+    {
+        if (!$this->hasHandler($modelClass)) {
+            return $this->generateHandler($modelClass);
+        }
+        
+        return $this->handlers[$modelClass];
+    }
+
+    /**
      * Generate on demand a validation handler for a specific model class.
      *
      * @param string $modelClass
