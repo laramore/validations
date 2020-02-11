@@ -4,10 +4,10 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Default rules
+    | Default options
     |--------------------------------------------------------------------------
     |
-    | This option defines the default rules used in fields.
+    | This option defines the default options used in fields.
     |
     */
 

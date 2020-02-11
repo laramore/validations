@@ -1,6 +1,6 @@
 <?php
 /**
- * Define a basic validation rule.
+ * Define a basic validation option.
  *
  * @author Samy Nastuzzi <samy@nastuzzi.fr>
  *
@@ -10,7 +10,7 @@
 
 namespace Laramore\Validations;
 
-use Laramore\Facades\Rule;
+use Laramore\Facades\Option;
 use Laramore\Fields\BaseField;
 
 class NotNullable extends BaseValidation
@@ -23,11 +23,11 @@ class NotNullable extends BaseValidation
      */
     public static function isFieldValid(BaseField $field): bool
     {
-        return !$field->hasRule(Rule::useCurrent());
+        return !$field->hasOption(Option::useCurrent());
     }
 
     /**
-     * Return the valdation rule for validations.
+     * Return the valdation option for validations.
      *
      * @param array<string,mixed> $data
      * @return string

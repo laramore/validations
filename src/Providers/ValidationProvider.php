@@ -11,9 +11,8 @@
 namespace Laramore\Providers;
 
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\Event;
 use Laramore\Facades\{
-	Validation, Rule, Type
+	Validation, Option, Type
 };
 use Laramore\Interfaces\{
     IsALaramoreManager, IsALaramoreProvider
@@ -47,7 +46,7 @@ class ValidationProvider extends ServiceProvider implements IsALaramoreProvider
         );
 
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/rule.php', 'rule',
+            __DIR__.'/../../config/option.php', 'option',
         );
 
         $this->mergeConfigFrom(
@@ -108,12 +107,12 @@ class ValidationProvider extends ServiceProvider implements IsALaramoreProvider
      */
     public function bootingCallback()
     {
-        Rule::define(config('validation.property_name'), []);
+        Option::define(config('validation.property_name'), []);
         Type::define(config('validation.property_name'), []);
 
         $this->addMacros();
 
-        Validation::extendValidatorRules();
+        Validation::extendValidatorOptions();
     }
 
     /**

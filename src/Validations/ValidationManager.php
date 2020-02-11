@@ -37,7 +37,7 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
      */
     protected $handlerClass = ValidationHandler::class;
 
-    protected $validatorRules = [
+    protected $validatorOptions = [
         'forbidden', 'negative', 'not_nullable', 'not_zero', 'unsigned',
     ];
 
@@ -80,49 +80,6 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
         if (!$this->hasHandler($modelClass)) {
             return $this->generateHandler($modelClass);
         }
-        
-        return $this->handlers[$modelClass];
-    }
-
-    /**
-     * Generate on demand a validation handler for a specific model class.
-     *
-     * @param string $modelClass
-     *
-     * @return BaseHandler
-     */
-    protected function generateHandler(string $modelClass): BaseHandler
-    {
-        $this->locked = false;
-        $handler = $this->createHandler($modelClass);
-        $this->locked = true;
-
-        $meta = $modelClass::getMeta();
-
-        foreach ($meta->getFields() as $field) {
-            $this->createValidationsForField($field);
-        }
-
-        foreach ($meta->getConstraintHandler()->all() as $constraint) {
-            $this->createValidationsForConstraint($constraint);
-        }
-
-        $handler->lock();
-
-        return $handler;
-    }
-
-    /**
-     * Return the validation handler for the given model class.
-     *
-     * @param  string $modelClass
-     * @return BaseHandler
-     */
-    public function getHandler(string $modelClass): BaseHandler
-    {
-        if (!$this->hasHandler($modelClass)) {
-            return $this->generateHandler($modelClass);
-        }
 
         return $this->handlers[$modelClass];
     }
@@ -139,14 +96,14 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
         $propertyName = config('validation.property_name');
         $defaultPriority = config('validation.default_priority');
 
-        $rulesValidations = \array_map(function ($rule) use ($propertyName) {
-            return $rule->get($propertyName);
-        }, $field->getRules());
+        $optionsValidations = \array_map(function ($option) use ($propertyName) {
+            return $option->get($propertyName);
+        }, $field->getOptions());
 
         $validations = \array_merge(
             $field->getConfig($propertyName, []),
             $field->getType()->get($propertyName),
-            ...\array_values($rulesValidations)
+            ...\array_values($optionsValidations)
         );
 
         foreach ($validations as $data) {
@@ -191,7 +148,7 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
     }
 
     /**
-     * Validate unsigned validation rule.
+     * Validate unsigned validation option.
      *
      * @param mixed $attribute
      * @param mixed $value
@@ -206,7 +163,7 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
     }
 
     /**
-     * Validate negative validation rule.
+     * Validate negative validation option.
      *
      * @param mixed $attribute
      * @param mixed $value
@@ -221,7 +178,7 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
     }
 
     /**
-     * Validate not nullable validation rule.
+     * Validate not nullable validation option.
      *
      * @param mixed $attribute
      * @param mixed $value
@@ -236,7 +193,7 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
     }
 
     /**
-     * Validate not zero validation rule.
+     * Validate not zero validation option.
      *
      * @param mixed $attribute
      * @param mixed $value
@@ -251,7 +208,7 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
     }
 
     /**
-     * Validate forbidden validation rule.
+     * Validate forbidden validation option.
      *
      * @param mixed $attribute
      * @param mixed $value
@@ -266,14 +223,14 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
     }
 
     /**
-     * Extend multiple validation rules in validator.
+     * Extend multiple validation options in validator.
      *
      * @return void
      */
-    public function extendValidatorRules()
+    public function extendValidatorOptions()
     {
-        foreach ($this->validatorRules as $validatorRule) {
-            Validator::extend($validatorRule, [$this, 'validate'.Str::studly($validatorRule)]);
+        foreach ($this->validatorOptions as $validatorOption) {
+            Validator::extend($validatorOption, [$this, 'validate'.Str::studly($validatorOption)]);
         }
     }
 }

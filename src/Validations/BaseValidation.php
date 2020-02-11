@@ -1,6 +1,6 @@
 <?php
 /**
- * Define a basic validation rule.
+ * Define a basic validation option.
  *
  * @author Samy Nastuzzi <samy@nastuzzi.fr>
  *
@@ -13,7 +13,7 @@ namespace Laramore\Validations;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Validator as ValidatorReturn;
-use Illuminate\Contracts\Validation\Rule as ValidationRule;
+use Illuminate\Contracts\Validation\Rule;
 use Laramore\Fields\BaseField;
 use Laramore\Observers\BaseObserver;
 use Laramore\Interfaces\IsConfigurable;
@@ -53,7 +53,7 @@ abstract class BaseValidation extends BaseObserver implements IsConfigurable
     }
 
     /**
-     * Return the generated rule name.
+     * Return the generated option name.
      *
      * @return string
      */
@@ -138,10 +138,10 @@ abstract class BaseValidation extends BaseObserver implements IsConfigurable
     abstract public static function isFieldValid(BaseField $field): bool;
 
     /**
-     * Return the valdation rule for validations.
+     * Return the valdation option for validations.
      *
      * @param array<string,mixed> $data
-     * @return string|ValidationRule|Closure|callback
+     * @return string|Rule|Closure|callback
      */
     abstract public function getValidationRule(array $data);
 }

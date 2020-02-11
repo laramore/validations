@@ -103,18 +103,18 @@ class ValidationHandler extends BaseHandler
     }
 
     /**
-     * Return all rules for a specfic set of field names.
+     * Return all options for a specfic set of field names.
      *
      * @param  array $values Associative fieldname => value or only fieldnames.
      * @return array
      */
-    public function getRules(array $values=null): array
+    public function getOptions(array $values=null): array
     {
         if (!Arr::isAssoc($values)) {
             $values = \array_fill_keys($values, null);
-            $rulesData = [];
+            $optionsData = [];
         } else {
-            $rulesData = $values;
+            $optionsData = $values;
         }
 
         if (\is_null($values)) {
@@ -123,9 +123,9 @@ class ValidationHandler extends BaseHandler
             $fieldValidations = \array_intersect_key($this->all(), $values);
         }
 
-        return \array_map(function (array $validations) use ($rulesData) {
-            return \array_map(function (BaseValidation $validation) use ($rulesData) {
-                return $validation->getValidationRule($rulesData);
+        return \array_map(function (array $validations) use ($optionsData) {
+            return \array_map(function (BaseValidation $validation) use ($optionsData) {
+                return $validation->getValidationRule($optionsData);
             }, $validations);
         }, $fieldValidations);
     }
@@ -138,7 +138,7 @@ class ValidationHandler extends BaseHandler
      */
     public function getValidator(array $values): ValidatorResult
     {
-        return Validator::make($values, $this->getRules($values));
+        return Validator::make($values, $this->getOptions($values));
     }
 
     /**

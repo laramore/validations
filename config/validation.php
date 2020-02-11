@@ -15,11 +15,11 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Name for the defined validation class in rules.
+    | Name for the defined validation class in options.
     |--------------------------------------------------------------------------
     |
     | This option defines the key name to use to resolve the validation class
-    | specific to a rule.
+    | specific to a option.
     |
     */
 

@@ -1,6 +1,6 @@
 <?php
 /**
- * Define a validation with a specific rule.
+ * Define a validation with a specific option.
  *
  * @author Samy Nastuzzi <samy@nastuzzi.fr>
  *
@@ -11,62 +11,62 @@
 namespace Laramore\Validations;
 
 use Laramore\Fields\BaseField;
-use Illuminate\Contracts\Validation\Rule as ValidationRule;
+use Illuminate\Contracts\Validation\Rule;
 use Closure;
 
 class Validation extends BaseValidation
 {
     public const TYPE_PRIORITY = ((self::MAX_PRIORITY + self::HIGH_PRIORITY) / 2);
 
-    protected $rule;
+    protected $option;
 
     /**
      * An observer needs at least a name and a Closure.
      *
-     * @param string|Rule|Closure $rule
+     * @param string|Rule|Closure $option
      * @param BaseField           $field
      * @param integer             $priority
      */
-    public function __construct($rule, BaseField $field, int $priority=self::MEDIUM_PRIORITY)
+    public function __construct($option, BaseField $field, int $priority=self::MEDIUM_PRIORITY)
     {
-        $this->rule = $rule;
+        $this->option = $option;
 
         parent::__construct($field, $priority);
     }
 
     /**
-     * Return the generated rule name.
+     * Return the generated option name.
      *
      * @return string
      */
     public function getRuleName(): string
     {
-        return \is_string($this->rule) ? $this->rule : parent::getRuleName();
+        return \is_string($this->option) ? $this->option : parent::getRuleName();
     }
 
     /**
-     * Define the rule.
+     * Define the option.
      *
-     * @param string|Rule|Closure $rule
+     * @param string|Rule|Closure $option
      * @return self
      */
-    public function setRule($rule)
+    public function setRule($option)
     {
         $this->needsToBeUnlocked();
 
-        $this->rule = $rule;
+        $this->option = $option;
 
         return $this;
     }
 
     /**
-     * Return the rule of this validation.
+     * Return the option of this validation.
      *
      * @return string|Rule|Closure|callback
      */
     public function getRule()
     {
-        return $this->rule;
+        return $this->option;
     }
 
     /**
@@ -81,10 +81,10 @@ class Validation extends BaseValidation
     }
 
     /**
-     * Return the valdation rule for validations.
+     * Return the valdation option for validations.
      *
      * @param array<string,mixed> $data
-     * @return string|ValidationRule|Closure|callback
+     * @return string|Rule|Closure|callback
      */
     public function getValidationRule(array $data)
     {

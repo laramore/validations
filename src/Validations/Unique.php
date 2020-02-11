@@ -10,8 +10,7 @@
 
 namespace Laramore\Validations;
 
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Validation\Rule as ValidationRule;
+use Illuminate\Validation\Rule;
 use Laramore\Fields\{
     BaseField, AttributeField, Constraint\BaseConstraint
 };
@@ -41,27 +40,27 @@ class Unique extends BaseConstraintValidation
     }
 
     /**
-     * Return the valdation rule for validations.
+     * Return the valdation option for validations.
      *
      * @param array<string,mixed> $data
-     * @return string|ValidationRule
+     * @return string|Rule
      */
     public function getValidationRule(array $data)
     {
         $constraint = $this->getConstraint();
 
         if (!\is_null($constraint) && $constraint->isComposed()) {
-            $validationRule = ValidationRule::unique($constraint->getMainTableName());
+            $validationOption = Rule::unique($constraint->getMainTableName());
             $attributes = $constraint->getAttributes();
             \array_shift($attributes);
 
             foreach ($attributes as $attribute) {
                 if (isset($data[$name = $attribute->getNative()])) {
-                    $validationRule->where($name, $attribute->dry($data[$name]));
+                    $validationOption->where($name, $attribute->dry($data[$name]));
                 }
             }
 
-            return $validationRule;
+            return $validationOption;
         }
 
         return 'unique:'.$this->getField()->getMeta()->getTableName().','.$this->getField()->getNative();

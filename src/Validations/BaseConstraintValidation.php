@@ -1,6 +1,6 @@
 <?php
 /**
- * Define a basic validation rule which can change with a constraint field.
+ * Define a basic validation option which can change with a constraint field.
  *
  * @author Samy Nastuzzi <samy@nastuzzi.fr>
  *

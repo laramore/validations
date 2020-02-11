@@ -39,7 +39,7 @@ class Exists extends BaseConstraintValidation
     }
 
     /**
-     * Return the valdation rule for validations.
+     * Return the valdation option for validations.
      *
      * @param array<string,mixed> $data
      * @return string
