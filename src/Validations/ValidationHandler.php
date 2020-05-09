@@ -111,7 +111,7 @@ class ValidationHandler extends BaseHandler
     public function getRules(array $values=null): array
     {
         $optionsData = [];
-        
+
         if (\is_null($values)) {
             $fieldValidations = $this->all();
         } else {

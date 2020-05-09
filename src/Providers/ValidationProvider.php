@@ -115,14 +115,6 @@ class ValidationProvider extends ServiceProvider implements LaramoreProvider
         Option::define($propertyName, []);
         Type::define($propertyName, []);
 
-        // TODO: Factory
-        Type::define('factory_name');
-        BaseField::macro('generate', function () {
-            $name = $this->getType()->getFactoryName();
-
-            return app('Faker\Generator')->format($name);
-        });
-
         $this->setMacros();
 
         Validation::extendValidatorOptions();
@@ -154,23 +146,6 @@ class ValidationProvider extends ServiceProvider implements LaramoreProvider
             return Validation::getHandler($this->getMeta()->getModelClass())
                 ->getValidator([$this->getName() => $value])->passes();
         });
-    }
-
-    /**
-     * Define all proxies
-     *
-     * @return void
-     */
-    public function setProxies()
-    {
-        // $config = Container::getInstance()->config->get('validation.proxy');
-        // $class = $config['class'];
-
-        // foreach (MetaManager::getMetas() as $meta) {
-        //     $proxy = $meta->getProxyHandler();
-
-        //     foreach ($config['configurations'] as )
-        // }
     }
 
     /**
