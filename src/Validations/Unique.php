@@ -36,7 +36,7 @@ class Unique extends BaseConstraintValidation
      */
     public static function isConstraintValid(BaseConstraint $constraint): bool
     {
-        return $constraint->getConstraintName() === BaseConstraint::UNIQUE;
+        return $constraint->getConstraintType() === BaseConstraint::UNIQUE;
     }
 
     /**

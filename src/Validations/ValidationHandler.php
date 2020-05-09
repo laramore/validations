@@ -103,24 +103,25 @@ class ValidationHandler extends BaseHandler
     }
 
     /**
-     * Return all options for a specfic set of field names.
+     * Return all rules for a specfic set of field names.
      *
      * @param  array $values Associative fieldname => value or only fieldnames.
      * @return array
      */
-    public function getOptions(array $values=null): array
+    public function getRules(array $values=null): array
     {
-        if (!Arr::isAssoc($values)) {
-            $values = \array_fill_keys($values, null);
-            $optionsData = [];
-        } else {
-            $optionsData = $values;
-        }
-
+        $optionsData = [];
+        
         if (\is_null($values)) {
             $fieldValidations = $this->all();
         } else {
             $fieldValidations = \array_intersect_key($this->all(), $values);
+
+            if (!Arr::isAssoc($values)) {
+                $values = \array_fill_keys($values, null);
+            } else {
+                $optionsData = $values;
+            }
         }
 
         return \array_map(function (array $validations) use ($optionsData) {
@@ -133,12 +134,13 @@ class ValidationHandler extends BaseHandler
     /**
      * Return the validator for an array of values.
      *
-     * @param  array $values
+     * @param  array   $values
+     * @param  boolean $onlyForValues
      * @return ValidatorResult
      */
-    public function getValidator(array $values): ValidatorResult
+    public function getValidator(array $values, bool $onlyForValues=true): ValidatorResult
     {
-        return Validator::make($values, $this->getOptions($values));
+        return Validator::make($values, $this->getRules($onlyForValues ? $values : null));
     }
 
     /**

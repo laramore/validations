@@ -17,11 +17,11 @@ use Illuminate\Support\{
 use Laramore\Observers\{
     BaseManager, BaseHandler
 };
-use Laramore\Interfaces\IsALaramoreManager;
+use Laramore\Contracts\Manager\LaramoreManager;
 use Laramore\Fields\BaseField;
 use Laramore\Fields\Constraint\BaseConstraint;
 
-class ValidationManager extends BaseManager implements IsALaramoreManager
+class ValidationManager extends BaseManager implements LaramoreManager
 {
     /**
      * Allowed observable sub class.
@@ -60,7 +60,7 @@ class ValidationManager extends BaseManager implements IsALaramoreManager
             $this->createValidationsForField($field);
         }
 
-        foreach ($meta->getConstraintHandler()->all() as $constraint) {
+        foreach ($meta->getConstraintHandler()->getConstraints() as $constraint) {
             $this->createValidationsForConstraint($constraint);
         }
 
