@@ -10,18 +10,19 @@
 
 namespace Laramore\Providers;
 
+use Illuminate\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Laramore\Facades\{
-	Validation, Option, Type
+	Validation, Option, Type, Meta as MetaManager
 };
-use Laramore\Interfaces\{
-    IsALaramoreManager, IsALaramoreProvider
+use Laramore\Contracts\{
+    Provider\LaramoreProvider, Manager\LaramoreManager
 };
 use Laramore\Traits\Provider\MergesConfig;
 use Laramore\Fields\BaseField;
-use Laramore\Meta;
+use Laramore\Eloquent\Meta;
 
-class ValidationProvider extends ServiceProvider implements IsALaramoreProvider
+class ValidationProvider extends ServiceProvider implements LaramoreProvider
 {
     use MergesConfig;
 
@@ -37,12 +38,12 @@ class ValidationProvider extends ServiceProvider implements IsALaramoreProvider
             'field.configurations',
         );
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/field/constraints.php',
-            'field.constraints',
+            __DIR__.'/../../config/field/constraint.php',
+            'field.constraint',
         );
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/field/proxies.php',
-            'field.proxies',
+            __DIR__.'/../../config/field/proxy.php',
+            'field.proxy',
         );
 
         $this->mergeConfigFrom(
@@ -75,6 +76,8 @@ class ValidationProvider extends ServiceProvider implements IsALaramoreProvider
         $this->publishes([
             __DIR__.'/../../config/validation.php' => config_path('validation.php'),
         ]);
+
+        $this->setProxies();
     }
 
     /**
@@ -90,9 +93,9 @@ class ValidationProvider extends ServiceProvider implements IsALaramoreProvider
     /**
      * Generate the corresponded manager.
      *
-     * @return IsALaramoreManager
+     * @return LaramoreManager
      */
-    public static function generateManager(): IsALaramoreManager
+    public static function generateManager(): LaramoreManager
     {
         $class = config('validation.manager');
 
@@ -107,10 +110,20 @@ class ValidationProvider extends ServiceProvider implements IsALaramoreProvider
      */
     public function bootingCallback()
     {
-        Option::define(config('validation.property_name'), []);
-        Type::define(config('validation.property_name'), []);
+        $propertyName = config('validation.property_name');
 
-        $this->addMacros();
+        Option::define($propertyName, []);
+        Type::define($propertyName, []);
+
+        // TODO: Factory
+        Type::define('factory_name');
+        BaseField::macro('generate', function () {
+            $name = $this->getType()->getFactoryName();
+
+            return app('Faker\Generator')->format($name);
+        });
+
+        $this->setMacros();
 
         Validation::extendValidatorOptions();
     }
@@ -120,7 +133,7 @@ class ValidationProvider extends ServiceProvider implements IsALaramoreProvider
      *
      * @return void
      */
-    protected function addMacros()
+    protected function setMacros()
     {
         Meta::macro('getValidationHandler', function () {
             return Validation::getHandler($this->getModelClass());
@@ -141,6 +154,23 @@ class ValidationProvider extends ServiceProvider implements IsALaramoreProvider
             return Validation::getHandler($this->getMeta()->getModelClass())
                 ->getValidator([$this->getName() => $value])->passes();
         });
+    }
+
+    /**
+     * Define all proxies
+     *
+     * @return void
+     */
+    public function setProxies()
+    {
+        // $config = Container::getInstance()->config->get('validation.proxy');
+        // $class = $config['class'];
+
+        // foreach (MetaManager::getMetas() as $meta) {
+        //     $proxy = $meta->getProxyHandler();
+
+        //     foreach ($config['configurations'] as )
+        // }
     }
 
     /**
