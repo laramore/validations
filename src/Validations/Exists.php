@@ -35,7 +35,7 @@ class Exists extends BaseConstraintValidation
      */
     public static function isConstraintValid(BaseConstraint $constraint): bool
     {
-        return $constraint->getConstraintName() === BaseConstraint::FOREIGN;
+        return $constraint->getConstraintType() === BaseConstraint::FOREIGN;
     }
 
     /**

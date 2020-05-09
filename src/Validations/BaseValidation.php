@@ -16,10 +16,10 @@ use Illuminate\Validation\Validator as ValidatorReturn;
 use Illuminate\Contracts\Validation\Rule;
 use Laramore\Fields\BaseField;
 use Laramore\Observers\BaseObserver;
-use Laramore\Interfaces\IsConfigurable;
+use Laramore\Contracts\Configured;
 use Closure;
 
-abstract class BaseValidation extends BaseObserver implements IsConfigurable
+abstract class BaseValidation extends BaseObserver implements Configured
 {
     protected $field;
 
