@@ -48,7 +48,7 @@
     "extra": {
         "laravel": {
             "providers": [
-                "Laramore\\Providers\\ValidationsProvider"
+                "Laramore\\Providers\\ValidationProvider"
             ],
             "aliases": {
                 "Validation": "Laramore\\Facades\\Validation"
