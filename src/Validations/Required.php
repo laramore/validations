@@ -12,6 +12,9 @@ namespace Laramore\Validations;
 
 use Laramore\Facades\Option;
 use Laramore\Fields\BaseField;
+use Laramore\Contracts\Field\{
+    ComposedField, AttributeField
+};
 
 class Required extends BaseValidation
 {
@@ -34,6 +37,18 @@ class Required extends BaseValidation
      */
     public function getValidationRule(array $data)
     {
+        $field = $this->getField();
+
+        if ($field->getOwner() !== $field->getMeta()) {
+            return "required_without:{$field->getOwner()->getName()}";
+        }
+
+        if ($field instanceof ComposedField) {
+            return 'required_without_all:'.\implode(',', \array_map(function (AttributeField $subField) {
+                return $subField->getName();
+            }, $field->getFields(AttributeField::class)));
+        }
+
         return 'required';
     }
 }
