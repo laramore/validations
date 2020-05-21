@@ -22,6 +22,11 @@ use Laramore\Traits\Provider\MergesConfig;
 use Laramore\Fields\BaseField;
 use Laramore\Eloquent\Meta;
 
+use Faker\Factory as FakerFactory;
+use Faker\Generator as FakerGenerator;
+use Illuminate\Database\Eloquent\Factory as EloquentFactory;
+
+
 class ValidationProvider extends ServiceProvider implements LaramoreProvider
 {
     use MergesConfig;
@@ -34,16 +39,15 @@ class ValidationProvider extends ServiceProvider implements LaramoreProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/field/configurations.php',
-            'field.configurations',
+            __DIR__.'/../../config/field/configurations.php', 'field.configurations',
         );
+
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/field/constraint.php',
-            'field.constraint',
+            __DIR__.'/../../config/field/constraint.php', 'field.constraint',
         );
+        
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/field/proxy.php',
-            'field.proxy',
+            __DIR__.'/../../config/field/proxy.php', 'field.proxy',
         );
 
         $this->mergeConfigFrom(
@@ -76,8 +80,6 @@ class ValidationProvider extends ServiceProvider implements LaramoreProvider
         $this->publishes([
             __DIR__.'/../../config/validation.php' => config_path('validation.php'),
         ]);
-
-        $this->setProxies();
     }
 
     /**
