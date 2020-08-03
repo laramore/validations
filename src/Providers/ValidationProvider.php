@@ -10,10 +10,9 @@
 
 namespace Laramore\Providers;
 
-use Illuminate\Container\Container;
 use Illuminate\Support\ServiceProvider;
 use Laramore\Facades\{
-	Validation, Option, Type, Meta as MetaManager
+	Validation, Option, Type
 };
 use Laramore\Contracts\{
     Provider\LaramoreProvider, Manager\LaramoreManager
@@ -21,11 +20,6 @@ use Laramore\Contracts\{
 use Laramore\Traits\Provider\MergesConfig;
 use Laramore\Fields\BaseField;
 use Laramore\Eloquent\Meta;
-
-use Faker\Factory as FakerFactory;
-use Faker\Generator as FakerGenerator;
-use Illuminate\Database\Eloquent\Factory as EloquentFactory;
-
 
 class ValidationProvider extends ServiceProvider implements LaramoreProvider
 {
@@ -45,7 +39,7 @@ class ValidationProvider extends ServiceProvider implements LaramoreProvider
         $this->mergeConfigFrom(
             __DIR__.'/../../config/field/constraint.php', 'field.constraint',
         );
-        
+
         $this->mergeConfigFrom(
             __DIR__.'/../../config/field/proxy.php', 'field.proxy',
         );
@@ -130,21 +124,25 @@ class ValidationProvider extends ServiceProvider implements LaramoreProvider
     protected function setMacros()
     {
         Meta::macro('getValidationHandler', function () {
+            /** @var \Laramore\Contracts\Eloquent\LaramoreMeta $this */
             return Validation::getHandler($this->getModelClass());
         });
 
         BaseField::macro('getValidations', function () {
+            /** @var \Laramore\Contracts\Eloquent\Field $this */
             $handler = Validation::getHandler($this->getMeta()->getModelClass());
 
             return ($handler->has($this->getName())) ? $handler->get($this->getName()) : [];
         });
 
         BaseField::macro('getErrors', function ($value) {
+            /** @var \Laramore\Contracts\Eloquent\Field $this */
             return Validation::getHandler($this->getMeta()->getModelClass())
                 ->getErrors([$this->getName() => $value]);
         });
 
         BaseField::macro('isValid', function ($value) {
+            /** @var \Laramore\Contracts\Eloquent\Field $this */
             return Validation::getHandler($this->getMeta()->getModelClass())
                 ->getValidator([$this->getName() => $value])->passes();
         });

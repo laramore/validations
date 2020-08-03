@@ -21,7 +21,6 @@ abstract class BaseConstraintValidation extends BaseValidation
      *
      * @param BaseConstraint $constraint
      * @param integer        $priority
-     *
      * @return static
      */
     public static function validationConstraint(BaseConstraint $constraint, int $priority=self::MEDIUM_PRIORITY)

@@ -208,7 +208,7 @@ class ValidationManager extends BaseManager implements LaramoreManager
     }
 
     /**
-     * Validate forbidden validation option.
+     * Validate unsigned validation option.
      *
      * @param mixed $attribute
      * @param mixed $value

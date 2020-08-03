@@ -11,19 +11,20 @@
 namespace Laramore\Validations;
 
 use Illuminate\Validation\Rule;
-use Laramore\Fields\{
-    BaseField, AttributeField, Constraint\BaseConstraint
+use Laramore\Contracts\Field\{
+    Field, AttributeField
 };
+use Laramore\Fields\Constraint\BaseConstraint;
 
 class Unique extends BaseConstraintValidation
 {
     /**
      * Indicate if the field is for this validation.
      *
-     * @param  BaseField $field
+     * @param  Field $field
      * @return boolean
      */
-    public static function isFieldValid(BaseField $field): bool
+    public static function isFieldValid(Field $field): bool
     {
         return ($field instanceof AttributeField);
     }

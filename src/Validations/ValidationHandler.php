@@ -14,6 +14,7 @@ use Illuminate\Support\{
     Arr, Facades\Validator
 };
 use Illuminate\Validation\Validator as ValidatorResult;
+use Laramore\Contracts\Field\Field;
 use Laramore\Observers\{
     BaseObserver, BaseHandler
 };
@@ -36,10 +37,12 @@ class ValidationHandler extends BaseHandler
      */
     protected function push(BaseObserver $observer, array &$observers)
     {
+        /** @var Field $observer */
         if (!isset($observers[$name = $observer->getField()->name])) {
             $observers[$name] = [];
         }
 
+        /** @var BaseObserver $observer */
         return parent::push($observer, $observers[$name]);
     }
 
@@ -78,7 +81,7 @@ class ValidationHandler extends BaseHandler
             return $this->observers[$fieldName];
         }
 
-        foreach ($this->observers[$fieldName] as $key => $observer) {
+        foreach ($this->observers[$fieldName] as $observer) {
             if ($observer->getName() === $name) {
                 return $observer;
             }

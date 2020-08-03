@@ -14,9 +14,10 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Validator as ValidatorReturn;
 use Illuminate\Contracts\Validation\Rule;
-use Laramore\Fields\BaseField;
 use Laramore\Observers\BaseObserver;
-use Laramore\Contracts\Configured;
+use Laramore\Contracts\{
+    Configured, Field\Field
+};
 use Closure;
 
 abstract class BaseValidation extends BaseObserver implements Configured
@@ -29,10 +30,10 @@ abstract class BaseValidation extends BaseObserver implements Configured
     /**
      * An observer needs at least a name and a Closure.
      *
-     * @param BaseField $field
-     * @param integer   $priority
+     * @param Field   $field
+     * @param integer $priority
      */
-    protected function __construct(BaseField $field, int $priority=self::MEDIUM_PRIORITY)
+    protected function __construct(Field $field, int $priority=self::MEDIUM_PRIORITY)
     {
         $this->setField($field);
 
@@ -42,12 +43,11 @@ abstract class BaseValidation extends BaseObserver implements Configured
     /**
      * Generate a validation.
      *
-     * @param BaseField $field
-     * @param integer   $priority
-     *
+     * @param Field   $field
+     * @param integer $priority
      * @return static
      */
-    public static function validation(BaseField $field, int $priority=self::MEDIUM_PRIORITY)
+    public static function validation(Field $field, int $priority=self::MEDIUM_PRIORITY)
     {
         return new static($field, $priority);
     }
@@ -90,10 +90,10 @@ abstract class BaseValidation extends BaseObserver implements Configured
     /**
      * Define the proxy field.
      *
-     * @param BaseField $field
+     * @param Field $field
      * @return self
      */
-    public function setField(BaseField $field)
+    public function setField(Field $field)
     {
         $this->needsToBeUnlocked();
 
@@ -105,9 +105,9 @@ abstract class BaseValidation extends BaseObserver implements Configured
     /**
      * Return the field which this validation is set for.
      *
-     * @return BaseField
+     * @return Field
      */
-    public function getField(): BaseField
+    public function getField(): Field
     {
         return $this->field;
     }
@@ -125,17 +125,30 @@ abstract class BaseValidation extends BaseObserver implements Configured
         return Validator::make([
             $name => $value,
         ], [
-            $name => [$this->getValidationRule()],
+            $name => [$this->getValidationRule([])],
         ]);
+    }
+
+    /**
+     * Retrieve the appropriate, localized validation message
+     * or fall back to the given default.
+     *
+     * @param string $key
+     * @param string $default
+     * @return string
+     **/
+    public function getLocalizedErrorMessage(string $key, string $default): string
+    {
+        return trans("validation.$key") === "validation.$key" ? $default : trans("validation.$key");
     }
 
     /**
      * Indicate if the field is for this validation.
      *
-     * @param  BaseField $field
+     * @param  Field $field
      * @return boolean
      */
-    abstract public static function isFieldValid(BaseField $field): bool;
+    abstract public static function isFieldValid(Field $field): bool;
 
     /**
      * Return the valdation option for validations.

@@ -10,8 +10,8 @@
 
 namespace Laramore\Validations;
 
-use Laramore\Fields\{
-    BaseField, Pattern as PatternField
+use Laramore\Contracts\Field\{
+    Field, PatternField
 };
 
 class Pattern extends BaseValidation
@@ -19,10 +19,10 @@ class Pattern extends BaseValidation
     /**
      * Indicate if the field is for this validation.
      *
-     * @param  BaseField $field
+     * @param  Field $field
      * @return boolean
      */
-    public static function isFieldValid(BaseField $field): bool
+    public static function isFieldValid(Field $field): bool
     {
         return $field instanceof PatternField;
     }

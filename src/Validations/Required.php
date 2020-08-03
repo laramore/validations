@@ -11,9 +11,8 @@
 namespace Laramore\Validations;
 
 use Laramore\Facades\Option;
-use Laramore\Fields\BaseField;
 use Laramore\Contracts\Field\{
-    ComposedField, AttributeField
+    Field, ComposedField, AttributeField
 };
 
 class Required extends BaseValidation
@@ -21,10 +20,10 @@ class Required extends BaseValidation
     /**
      * Indicate if the field is for this validation.
      *
-     * @param  BaseField $field
+     * @param  Field $field
      * @return boolean
      */
-    public static function isFieldValid(BaseField $field): bool
+    public static function isFieldValid(Field $field): bool
     {
         return !$field->hasOption(Option::nullable());
     }

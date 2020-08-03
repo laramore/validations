@@ -10,7 +10,7 @@
 
 namespace Laramore\Validations;
 
-use Laramore\Fields\BaseField;
+use Laramore\Contracts\Field\Field;
 use Illuminate\Contracts\Validation\Rule;
 use Closure;
 
@@ -24,10 +24,10 @@ class Validation extends BaseValidation
      * An observer needs at least a name and a Closure.
      *
      * @param string|Rule|Closure $option
-     * @param BaseField           $field
+     * @param Field               $field
      * @param integer             $priority
      */
-    public function __construct($option, BaseField $field, int $priority=self::MEDIUM_PRIORITY)
+    public function __construct($option, Field $field, int $priority=self::MEDIUM_PRIORITY)
     {
         $this->option = $option;
 
@@ -72,10 +72,10 @@ class Validation extends BaseValidation
     /**
      * Indicate if the field is for this validation.
      *
-     * @param  BaseField $field
+     * @param  Field $field
      * @return boolean
      */
-    public static function isFieldValid(BaseField $field): bool
+    public static function isFieldValid(Field $field): bool
     {
         return true;
     }
