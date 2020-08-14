@@ -1,5 +1,7 @@
 <?php
 
+namespace Laramore\Validations;
+
 return [
 
     /*
@@ -13,33 +15,37 @@ return [
 
     'configurations' => [
         'required' => [
-            'validation_classes' => [
-                [Laramore\Validations\Required::class, Laramore\Validations\Validation::MAX_PRIORITY],
+            'validations' => [
+                Required::class => [
+                    'priority' => Validation::MAX_PRIORITY,
+                ],
             ],
         ],
         'not_nullable' => [
-            'validation_classes' => [
-                [Laramore\Validations\NotNullable::class, Laramore\Validations\Validation::MAX_PRIORITY],
+            'validations' => [
+                NotNullable::class => [
+                    'priority' => Validation::MAX_PRIORITY,
+                ],
             ],
         ],
         'unsigned' => [
-            'validation_classes' => [
-                Laramore\Validations\Unsigned::class,
+            'validations' => [
+                Unsigned::class => [],
             ],
         ],
         'negative' => [
-            'validation_classes' => [
-                Laramore\Validations\Negative::class,
+            'validations' => [
+                Negative::class => [],
             ],
         ],
         'not_zero' => [
-            'validation_classes' => [
-                Laramore\Validations\NotZero::class,
+            'validations' => [
+                NotZero::class => [],
             ],
         ],
         'not_blank' => [
-            'validation_classes' => [
-                Laramore\Validations\NotBlank::class,
+            'validations' => [
+                NotBlank::class => [],
             ],
         ]
     ],

@@ -1,6 +1,6 @@
 <?php
 
-$constraintPriority = Laramore\Validations\Validation::CONSTRAINT_PRIORITY;
+namespace Laramore\Validations;
 
 return [
 
@@ -15,13 +15,17 @@ return [
 
     'configurations' => [
         'unique' => [
-            'validation_classes' => [
-                [Laramore\Validations\Unique::class, $constraintPriority],
+            'validations' => [
+                Unique::class => [
+                    'priority' => Validation::CONSTRAINT_PRIORITY,
+                ],
             ],
         ],
         'foreign' => [
-            'validation_classes' => [
-                [Laramore\Validations\Exists::class, $constraintPriority],
+            'validations' => [
+                Exists::class => [
+                    'priority' => Validation::CONSTRAINT_PRIORITY,
+                ],
             ],
         ],
     ],

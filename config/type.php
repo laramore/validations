@@ -1,5 +1,7 @@
 <?php
 
+namespace Laramore\Validations;
+
 return [
 
     /*
@@ -12,24 +14,46 @@ return [
     */
 
     'configurations' => [
+        'boolean' => [
+            'validations' => [
+                Boolean::class => [
+                    'priority' => Validation::TYPE_PRIORITY,
+                ],
+            ],
+        ],
         'char' => [
-            'validation_classes' => [
-                Laramore\Validations\MinLength::class,
-                Laramore\Validations\MaxLength::class,
+            'validations' => [
+                Text::class => [
+                    'priority' => Validation::TYPE_PRIORITY,
+                ],
+                MinLength::class => [],
+                MaxLength::class => [],
             ],
         ],
         'email' => [
-            'validation_classes' => [
-                Laramore\Validations\MinLength::class,
-                Laramore\Validations\MaxLength::class,
-                Laramore\Validations\Pattern::class,
+            'validations' => [
+                MinLength::class => [],
+                MaxLength::class => [],
+                Pattern::class => [],
+            ],
+        ],
+        'integer' => [
+            'validations' => [
+                Numeric::class => [
+                    'priority' => Validation::TYPE_PRIORITY,
+                ],
+            ],
+        ],
+        'timestamp' => [
+            'validations' => [
+                DateTime::class => [
+                    'priority' => Validation::TYPE_PRIORITY,
+                ],
             ],
         ],
         'password' => [
-            'validation_classes' => [
-                Laramore\Validations\MinLength::class,
-                Laramore\Validations\MaxLength::class,
-                Laramore\Validations\Pattern::class,
+            'validations' => [
+                Pattern::class => [],
             ],
         ],
     ],

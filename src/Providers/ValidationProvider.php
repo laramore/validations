@@ -33,10 +33,6 @@ class ValidationProvider extends ServiceProvider implements LaramoreProvider
     public function register()
     {
         $this->mergeConfigFrom(
-            __DIR__.'/../../config/field/configurations.php', 'field.configurations',
-        );
-
-        $this->mergeConfigFrom(
             __DIR__.'/../../config/field/constraint.php', 'field.constraint',
         );
 
@@ -138,13 +134,13 @@ class ValidationProvider extends ServiceProvider implements LaramoreProvider
         BaseField::macro('getErrors', function ($value) {
             /** @var \Laramore\Contracts\Eloquent\Field $this */
             return Validation::getHandler($this->getMeta()->getModelClass())
-                ->getErrors([$this->getName() => $value]);
+                ->getErrors([$this->getName() => $value], true);
         });
 
         BaseField::macro('isValid', function ($value) {
             /** @var \Laramore\Contracts\Eloquent\Field $this */
             return Validation::getHandler($this->getMeta()->getModelClass())
-                ->getValidator([$this->getName() => $value])->passes();
+                ->getValidator([$this->getName() => $value], true)->passes();
         });
     }
 

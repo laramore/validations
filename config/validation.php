@@ -1,5 +1,7 @@
 <?php
 
+namespace Laramore\Validations;
+
 return [
 
     /*
@@ -11,7 +13,7 @@ return [
     |
     */
 
-    'manager' => Laramore\Validations\ValidationManager::class,
+    'manager' => ValidationManager::class,
 
     /*
     |--------------------------------------------------------------------------
@@ -23,9 +25,9 @@ return [
     |
     */
 
-    'property_name' => 'validation_classes',
+    'property_name' => 'validations',
 
-    'default_priority' => Laramore\Validations\Validation::MEDIUM_PRIORITY,
+    'default_priority' => Validation::MEDIUM_PRIORITY,
 
     'configurations' => [
         'date_time' => [
