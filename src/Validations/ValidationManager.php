@@ -12,7 +12,7 @@ namespace Laramore\Validations;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\{
-    Str, Facades\Validator
+    Arr, Str, Facades\Validator
 };
 use Laramore\Observers\{
     BaseManager, BaseHandler
@@ -106,15 +106,9 @@ class ValidationManager extends BaseManager implements LaramoreManager
             ...\array_values($optionsValidations)
         );
 
-        foreach ($validations as $data) {
-            if (\is_string($data)) {
-                [$validationClass, $priority] = [$data, $defaultPriority];
-            } else {
-                [$validationClass, $priority] = [$data[0], ($data[1] ?? $defaultPriority)];
-            }
-
-            if ($validationClass && $validationClass::isFieldValid($field)) {
-                $handler->add($validationClass::validation($field, $priority));
+        foreach ($validations as $validationClass => $data) {
+            if (!\is_null($data) && $validationClass::isFieldValid($field)) {
+                $handler->add($validationClass::validation($field, Arr::get($data, 'priority', $defaultPriority)));
             }
         }
     }
@@ -127,22 +121,18 @@ class ValidationManager extends BaseManager implements LaramoreManager
      */
     public function createValidationsForConstraint(BaseConstraint $constraint)
     {
-        $field = $constraint->getMainAttribute();
+        $field = $constraint->getAttributes()[0];
         $handler = $this->getHandler($field->getMeta()->getModelClass());
         $propertyName = config('validation.property_name');
         $defaultPriority = config('validation.default_priority');
         $validations = $constraint->getConfig($propertyName, []);
 
-        foreach ($validations as $data) {
-            if (\is_string($data)) {
-                [$validationClass, $priority] = [$data, $defaultPriority];
-            } else {
-                [$validationClass, $priority] = [$data[0], ($data[1] ?? $defaultPriority)];
-            }
-
-            if ($validationClass && $validationClass::isConstraintValid($constraint)
+        foreach ($validations as $validationClass => $data) {
+            if (!\is_null($data) && $validationClass::isConstraintValid($constraint)
                 && $validationClass::isFieldValid($field)) {
-                $handler->add($validationClass::validationConstraint($constraint, $priority));
+                $handler->add(
+                    $validationClass::validationConstraint($constraint, Arr::get($data, 'priority', $defaultPriority))
+                );
             }
         }
     }

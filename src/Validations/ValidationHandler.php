@@ -59,7 +59,7 @@ class ValidationHandler extends BaseHandler
             return isset($this->observers[$fieldName]);
         }
 
-        foreach (($this->observers[$fieldName] ?? []) as $key => $observer) {
+        foreach (($this->observers[$fieldName] ?? []) as $observer) {
             if ($observer->getName() === $name) {
                 return true;
             }
@@ -108,28 +108,25 @@ class ValidationHandler extends BaseHandler
     /**
      * Return all rules for a specfic set of field names.
      *
-     * @param  array $values Associative fieldname => value or only fieldnames.
+     * @param  array   $values        Associative fieldname => value or only fieldnames.
+     * @param  boolean $onlyForValues
      * @return array
      */
-    public function getRules(array $values=null): array
+    public function getRules(array $values=[], bool $onlyForValues=false): array
     {
-        $optionsData = [];
+        $fieldValidations = $this->all();
 
-        if (\is_null($values)) {
-            $fieldValidations = $this->all();
-        } else {
-            $fieldValidations = \array_intersect_key($this->all(), $values);
+        if ($onlyForValues) {
+            $fieldValidations = \array_intersect_key($fieldValidations, $values);
 
             if (!Arr::isAssoc($values)) {
                 $values = \array_fill_keys($values, null);
-            } else {
-                $optionsData = $values;
             }
         }
 
-        return \array_map(function (array $validations) use ($optionsData) {
-            return \array_map(function (BaseValidation $validation) use ($optionsData) {
-                return $validation->getValidationRule($optionsData);
+        return \array_map(function (array $validations) use ($values) {
+            return \array_map(function (BaseValidation $validation) use ($values) {
+                return $validation->getValidationRule($values);
             }, $validations);
         }, $fieldValidations);
     }
@@ -141,20 +138,21 @@ class ValidationHandler extends BaseHandler
      * @param  boolean $onlyForValues
      * @return ValidatorResult
      */
-    public function getValidator(array $values, bool $onlyForValues=true): ValidatorResult
+    public function getValidator(array $values, bool $onlyForValues=false): ValidatorResult
     {
-        return Validator::make($values, $this->getRules($onlyForValues ? $values : null));
+        return Validator::make($values, $this->getRules($values, $onlyForValues));
     }
 
     /**
      * Return all errors for an array of values.
      *
-     * @param  array $values
+     * @param  array   $values
+     * @param  boolean $onlyForValues
      * @return array
      */
-    public function getErrors(array $values): array
+    public function getErrors(array $values, bool $onlyForValues=false): array
     {
-        return $this->getValidator($values)->errors()->all();
+        return $this->getValidator($values, $onlyForValues)->errors()->all();
     }
 
     /**
