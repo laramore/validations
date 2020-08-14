@@ -16,8 +16,6 @@ use Closure;
 
 class Validation extends BaseValidation
 {
-    public const TYPE_PRIORITY = ((self::MAX_PRIORITY + self::HIGH_PRIORITY) / 2);
-
     protected $option;
 
     /**

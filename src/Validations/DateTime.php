@@ -12,7 +12,7 @@ namespace Laramore\Validations;
 
 use Laramore\Contracts\Field\Field;
 
-class DataTime extends BaseValidation
+class DateTime extends BaseValidation
 {
     /**
      * Indicate if the field is for this validation.

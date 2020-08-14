@@ -13,7 +13,9 @@ namespace Laramore\Validations;
 use Laramore\Contracts\Field\{
     Field, AttributeField
 };
-use Laramore\Fields\Constraint\BaseConstraint;
+use Laramore\Fields\Constraint\{
+    BaseConstraint, BaseIndexableConstraint
+};
 
 class Exists extends BaseConstraintValidation
 {
@@ -36,7 +38,7 @@ class Exists extends BaseConstraintValidation
      */
     public static function isConstraintValid(BaseConstraint $constraint): bool
     {
-        return $constraint->getConstraintType() === BaseConstraint::FOREIGN;
+        return $constraint->getConstraintType() === BaseIndexableConstraint::FOREIGN;
     }
 
     /**

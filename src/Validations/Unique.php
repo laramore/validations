@@ -15,6 +15,7 @@ use Laramore\Contracts\Field\{
     Field, AttributeField
 };
 use Laramore\Fields\Constraint\BaseConstraint;
+use Laramore\Fields\Constraint\BaseIndexableConstraint;
 
 class Unique extends BaseConstraintValidation
 {
@@ -37,7 +38,7 @@ class Unique extends BaseConstraintValidation
      */
     public static function isConstraintValid(BaseConstraint $constraint): bool
     {
-        return $constraint->getConstraintType() === BaseConstraint::UNIQUE;
+        return $constraint->getConstraintType() === BaseIndexableConstraint::UNIQUE;
     }
 
     /**
@@ -51,17 +52,17 @@ class Unique extends BaseConstraintValidation
         $constraint = $this->getConstraint();
 
         if (!\is_null($constraint) && $constraint->isComposed()) {
-            $validationOption = Rule::unique($constraint->getMainTableName());
             $attributes = $constraint->getAttributes();
-            \array_shift($attributes);
+            $attribute = \array_shift($attributes);
+            $rule = Rule::unique($attribute->getMeta()->getTableName());
 
             foreach ($attributes as $attribute) {
-                if (isset($data[$name = $attribute->getNative()])) {
-                    $validationOption->where($name, $attribute->dry($data[$name]));
+                if ($attribute->has($data)) {
+                    $rule->where($attribute->getNative(), $attribute->dry($attribute->get($data)));
                 }
             }
 
-            return $validationOption;
+            return $rule;
         }
 
         return 'unique:'.$this->getField()->getMeta()->getTableName().','.$this->getField()->getNative();
