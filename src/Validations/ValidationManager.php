@@ -19,7 +19,9 @@ use Laramore\Observers\{
 };
 use Laramore\Contracts\Manager\LaramoreManager;
 use Laramore\Fields\BaseField;
-use Laramore\Fields\Constraint\BaseConstraint;
+use Laramore\Fields\Constraint\{
+    BaseConstraint, BaseIndexableConstraint, BaseRelationalConstraint, Foreign
+};
 
 class ValidationManager extends BaseManager implements LaramoreManager
 {
@@ -93,22 +95,19 @@ class ValidationManager extends BaseManager implements LaramoreManager
     public function createValidationsForField(BaseField $field)
     {
         $handler = $this->getHandler($field->getMeta()->getModelClass());
-        $propertyName = config('validation.property_name');
-        $defaultPriority = config('validation.default_priority');
 
-        $optionsValidations = \array_map(function ($option) use ($propertyName) {
-            return $option->get($propertyName);
+        $optionsValidations = \array_map(function ($option) {
+            return $option->validations;
         }, $field->getOptions());
 
         $validations = \array_merge(
-            $field->getConfig($propertyName, []),
-            $field->getType()->get($propertyName),
+            $field->getValidationConfig(),
             ...\array_values($optionsValidations)
         );
 
         foreach ($validations as $validationClass => $data) {
             if (!\is_null($data) && $validationClass::isFieldValid($field)) {
-                $handler->add($validationClass::validation($field, Arr::get($data, 'priority', $defaultPriority)));
+                $handler->add($validationClass::validation($field, Arr::get($data, 'priority', Validation::MEDIUM_PRIORITY)));
             }
         }
     }
@@ -123,17 +122,15 @@ class ValidationManager extends BaseManager implements LaramoreManager
     {
         $field = $constraint->getAttributes()[0];
         $handler = $this->getHandler($field->getMeta()->getModelClass());
-        $propertyName = config('validation.property_name');
-        $defaultPriority = config('validation.default_priority');
-        $validations = $constraint->getConfig($propertyName, []);
 
-        foreach ($validations as $validationClass => $data) {
-            if (!\is_null($data) && $validationClass::isConstraintValid($constraint)
-                && $validationClass::isFieldValid($field)) {
-                $handler->add(
-                    $validationClass::validationConstraint($constraint, Arr::get($data, 'priority', $defaultPriority))
-                );
-            }
+        if (\in_array($constraint->getConstraintType(), BaseIndexableConstraint::$migrable)) {
+            $handler->add(
+                Unique::validationConstraint($constraint, Validation::CONSTRAINT_PRIORITY)
+            );
+        } else if (\in_array($constraint->getConstraintType(), BaseRelationalConstraint::$migrable)) {
+            $handler->add(
+                Foreign::validationConstraint($constraint, Validation::CONSTRAINT_PRIORITY)
+            );
         }
     }
 

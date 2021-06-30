@@ -33,13 +33,6 @@ class DateTime extends BaseValidation
      */
     public function getValidationRule(array $data)
     {
-        switch ($this->getConfig('allowed')) {
-            case 'timestamp':
-                return 'date_format:'.$this->getConfig('date_format', 'Y-m-d');
-
-            case 'string':
-            default:
-                return 'date';
-        }
+        return 'date_format:Y-m-d';
     }
 }

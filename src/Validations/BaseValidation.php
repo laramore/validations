@@ -15,13 +15,16 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Validator as ValidatorReturn;
 use Illuminate\Contracts\Validation\Rule;
 use Laramore\Observers\BaseObserver;
-use Laramore\Contracts\{
-    Configured, Field\Field
-};
+use Laramore\Contracts\Field\Field;
 use Closure;
 
-abstract class BaseValidation extends BaseObserver implements Configured
+abstract class BaseValidation extends BaseObserver
 {
+    /**
+     * Field associated to this validation.
+     *
+     * @var Field
+     */
     protected $field;
 
     public const TYPE_PRIORITY = ((self::MAX_PRIORITY + self::HIGH_PRIORITY) / 2);
@@ -60,31 +63,6 @@ abstract class BaseValidation extends BaseObserver implements Configured
     public function getRuleName(): string
     {
         return Str::snake((new \ReflectionClass(static::class))->getShortName());
-    }
-
-    /**
-     * Return the configuration path for this field.
-     *
-     * @param string $path
-     * @return mixed
-     */
-    public function getConfigPath(string $path=null)
-    {
-        $name = Str::snake((new \ReflectionClass(static::class))->getShortName());
-
-        return 'validation.configurations.'.$name.(\is_null($path) ? '' : '.'.$path);
-    }
-
-    /**
-     * Return the configuration for this field.
-     *
-     * @param string $path
-     * @param mixed  $default
-     * @return mixed
-     */
-    public function getConfig(string $path=null, $default=null)
-    {
-        return config($this->getConfigPath($path), $default);
     }
 
     /**
