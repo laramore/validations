@@ -62,6 +62,9 @@ return [
             'priority' => Validation::MAX_PRIORITY,
         ],
     ],
+    'select' => [
+
+    ],
     'small_number' => [
 
     ],

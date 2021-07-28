@@ -108,27 +108,25 @@ class ValidationHandler extends BaseHandler
     /**
      * Return all rules for a specfic set of field names.
      *
-     * @param  array   $values        Associative fieldname => value or only fieldnames.
-     * @param  boolean $onlyForValues
+     * @param  array   $keys
      * @return array
      */
-    public function getRules(array $values=[], bool $onlyForValues=false): array
+    public function getRules(array $keys=[]): array
     {
-        $fieldValidations = $this->all();
+        $rules = [];
+        $validations = $this->all();
 
-        if ($onlyForValues) {
-            $fieldValidations = \array_intersect_key($fieldValidations, $values);
-
-            if (!Arr::isAssoc($values)) {
-                $values = \array_fill_keys($values, null);
-            }
+        if (empty($keys)) {
+            $keys = array_keys($validations);
         }
 
-        return \array_map(function (array $validations) use ($values) {
-            return \array_map(function (BaseValidation $validation) use ($values) {
-                return $validation->getValidationRule($values);
-            }, $validations);
-        }, $fieldValidations);
+        foreach ($keys as $key) {
+            $rules[$key] = \array_map(function (BaseValidation $validation) {
+                return $validation->getRule();
+            }, $validations[$key]);
+        }
+
+        return $rules;
     }
 
     /**
@@ -138,9 +136,9 @@ class ValidationHandler extends BaseHandler
      * @param  boolean $onlyForValues
      * @return ValidatorResult
      */
-    public function getValidator(array $values, bool $onlyForValues=false): ValidatorResult
+    public function getValidator(array $values): ValidatorResult
     {
-        return Validator::make($values, $this->getRules($values, $onlyForValues));
+        return Validator::make($values, $this->getRules(array_keys($values)));
     }
 
     /**
@@ -150,9 +148,9 @@ class ValidationHandler extends BaseHandler
      * @param  boolean $onlyForValues
      * @return array
      */
-    public function getErrors(array $values, bool $onlyForValues=false): array
+    public function getErrors(array $values): array
     {
-        return $this->getValidator($values, $onlyForValues)->errors()->all();
+        return $this->getValidator($values)->errors()->all();
     }
 
     /**

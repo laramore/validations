@@ -42,7 +42,7 @@ return [
         Validations\Pattern::class => [],
     ],
     Fields\Enum::class => [
-
+        Validations\Exists::class => [],
     ],
     Fields\Increment::class => [
         Validations\Numeric::class => [],
@@ -51,6 +51,12 @@ return [
         Validations\Numeric::class => [],
     ],
     Fields\Json::class => [
+
+    ],
+    Fields\JsonList::class => [
+
+    ],
+    Fields\JsonObject::class => [
 
     ],
     Fields\ManyToMany::class => [
