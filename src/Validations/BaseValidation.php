@@ -103,7 +103,7 @@ abstract class BaseValidation extends BaseObserver
         return Validator::make([
             $name => $value,
         ], [
-            $name => [$this->getValidationRule([])],
+            $name => [$this->getRule([])],
         ]);
     }
 
@@ -131,8 +131,7 @@ abstract class BaseValidation extends BaseObserver
     /**
      * Return the valdation option for validations.
      *
-     * @param array<string,mixed> $data
      * @return string|Rule|Closure|callback
      */
-    abstract public function getValidationRule(array $data);
+    abstract public function getRule();
 }

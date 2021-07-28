@@ -1,6 +1,6 @@
 <?php
 /**
- * Validate that the value is a unique in database.
+ * Validate that the value is a foreign in database.
  *
  * @author Samy Nastuzzi <samy@nastuzzi.fr>
  *
@@ -10,14 +10,15 @@
 
 namespace Laramore\Validations;
 
+use Illuminate\Validation\Rule;
 use Laramore\Contracts\Field\{
-    Field, AttributeField, EnumField
+    Field, RelationField
 };
 use Laramore\Fields\Constraint\{
-    BaseConstraint, BaseIndexableConstraint
+    BaseConstraint, BaseRelationalConstraint
 };
 
-class Exists extends BaseConstraintValidation
+class Foreign extends BaseConstraintValidation
 {
     /**
      * Indicate if the field is for this validation.
@@ -27,7 +28,7 @@ class Exists extends BaseConstraintValidation
      */
     public static function isFieldValid(Field $field): bool
     {
-        return ($field instanceof AttributeField) || ($field instanceof EnumField);
+        return ($field instanceof RelationField);
     }
 
     /**
@@ -38,24 +39,18 @@ class Exists extends BaseConstraintValidation
      */
     public static function isConstraintValid(BaseConstraint $constraint): bool
     {
-        return $constraint->getConstraintType() === BaseIndexableConstraint::FOREIGN;
+        return $constraint->getConstraintType() === BaseRelationalConstraint::FOREIGN;
     }
 
     /**
      * Return the valdation option for validations.
      *
-     * @return string
+     * @return string|Rule
      */
     public function getRule()
     {
-        $field = $this->getField();
+        $attribute = $this->getConstraint()->getTargetAttribute();
 
-        if ($field instanceof EnumField) {
-            return function ($name, $value) use ($field): bool {
-                return $field->has($value);
-            };
-        }
-
-        return 'exists:'.$this->getField()->getMeta()->getTableName().','.$this->getField()->getNative();
+        return 'exists:'.$attribute->getModel().','.$attribute;
     }
 }

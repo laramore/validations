@@ -20,7 +20,7 @@ use Laramore\Observers\{
 use Laramore\Contracts\Manager\LaramoreManager;
 use Laramore\Fields\BaseField;
 use Laramore\Fields\Constraint\{
-    BaseConstraint, BaseIndexableConstraint, BaseRelationalConstraint, Foreign
+    BaseConstraint, BaseIndexableConstraint, BaseRelationalConstraint
 };
 
 class ValidationManager extends BaseManager implements LaramoreManager

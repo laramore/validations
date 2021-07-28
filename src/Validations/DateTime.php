@@ -28,10 +28,9 @@ class DateTime extends BaseValidation
     /**
      * Return the valdation option for validations.
      *
-     * @param array<string,mixed> $data
      * @return string
      */
-    public function getValidationRule(array $data)
+    public function getRule()
     {
         return 'date_format:Y-m-d';
     }

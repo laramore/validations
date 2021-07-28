@@ -44,10 +44,9 @@ class Unique extends BaseConstraintValidation
     /**
      * Return the valdation option for validations.
      *
-     * @param array<string,mixed> $data
      * @return string|Rule
      */
-    public function getValidationRule(array $data)
+    public function getRule()
     {
         $constraint = $this->getConstraint();
 
@@ -57,9 +56,9 @@ class Unique extends BaseConstraintValidation
             $rule = Rule::unique($attribute->getMeta()->getTableName());
 
             foreach ($attributes as $attribute) {
-                if ($attribute->has($data)) {
-                    $rule->where($attribute->getNative(), $attribute->dry($attribute->get($data)));
-                }
+                // if ($attribute->has($data)) {
+                //     $rule->where($attribute->getNative(), $attribute->dry($attribute->get($data)));
+                // }
             }
 
             return $rule;

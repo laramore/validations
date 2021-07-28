@@ -16,18 +16,18 @@ use Closure;
 
 class Validation extends BaseValidation
 {
-    protected $option;
+    protected $rule;
 
     /**
      * An observer needs at least a name and a Closure.
      *
-     * @param string|Rule|Closure $option
+     * @param string|Rule|Closure $rule
      * @param Field               $field
      * @param integer             $priority
      */
-    public function __construct($option, Field $field, int $priority=self::MEDIUM_PRIORITY)
+    public function __construct($rule, Field $field, int $priority=self::MEDIUM_PRIORITY)
     {
-        $this->option = $option;
+        $this->rule = $rule;
 
         parent::__construct($field, $priority);
     }
@@ -39,20 +39,20 @@ class Validation extends BaseValidation
      */
     public function getRuleName(): string
     {
-        return \is_string($this->option) ? $this->option : parent::getRuleName();
+        return \is_string($this->rule) ? $this->rule : parent::getRuleName();
     }
 
     /**
-     * Define the option.
+     * Define the rule.
      *
-     * @param string|Rule|Closure $option
+     * @param string|Rule|Closure $rule
      * @return self
      */
-    public function setRule($option)
+    public function setRule($rule)
     {
         $this->needsToBeUnlocked();
 
-        $this->option = $option;
+        $this->rule = $rule;
 
         return $this;
     }
@@ -76,16 +76,5 @@ class Validation extends BaseValidation
     public static function isFieldValid(Field $field): bool
     {
         return true;
-    }
-
-    /**
-     * Return the valdation option for validations.
-     *
-     * @param array<string,mixed> $data
-     * @return string|Rule|Closure|callback
-     */
-    public function getValidationRule(array $data)
-    {
-        return $this->getRule();
     }
 }

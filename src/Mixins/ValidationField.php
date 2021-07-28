@@ -11,6 +11,8 @@
 namespace Laramore\Mixins;
 
 use Illuminate\Support\Arr;
+use Laramore\Contracts\Field\ManyRelationField;
+use Laramore\Contracts\Field\RelationField;
 use Laramore\Facades\Validation;
 
 
@@ -55,11 +57,35 @@ class ValidationField
      */
     public function getRules()
     {
-        return function (array $values=[]) {
+        return function () {
             /** @var \Laramore\Contracts\Eloquent\Field $this */
-            return \array_map(function ($validation) use ($values) {
-                return $validation->getValidationRule($values);
-            }, $this->getValidations());
+
+            $name = $this->getName();
+            $rules = [
+                $name => \array_map(function ($validation) {
+                    return $validation->getRule();
+                }, $this->getValidations()),
+            ];
+
+            if ($this instanceof RelationField) {
+                $modelClass = $this->isRelationHeadOn() ? $this->getSourceModel() : $this->getTargetModel();
+                $subRules = Validation::getHandler($modelClass)->getRules();
+
+                if ($this instanceof ManyRelationField) {
+                    $toFormatRules = $subRules;
+                    $subRules = [];
+
+                    foreach ($toFormatRules as $subName => $rule) {
+                        $subRules['*.'.$subName] = $rule;
+                    }
+                }
+
+                foreach ($subRules as $subName => $rule) {
+                    $rules[$name.'.'.$subName] = $rule;
+                }
+            }
+
+            return $rules;
         };
     }
 
