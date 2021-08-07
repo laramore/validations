@@ -48,22 +48,6 @@ class Unique extends BaseConstraintValidation
      */
     public function getRule()
     {
-        $constraint = $this->getConstraint();
-
-        if (!\is_null($constraint) && $constraint->isComposed()) {
-            $attributes = $constraint->getAttributes();
-            $attribute = \array_shift($attributes);
-            $rule = Rule::unique($attribute->getMeta()->getTableName());
-
-            foreach ($attributes as $attribute) {
-                // if ($attribute->has($data)) {
-                //     $rule->where($attribute->getNative(), $attribute->dry($attribute->get($data)));
-                // }
-            }
-
-            return $rule;
-        }
-
-        return 'unique:'.$this->getField()->getMeta()->getTableName().','.$this->getField()->getNative();
+        return 'index:'.$this->getField()->getMeta()->getModelClass();
     }
 }

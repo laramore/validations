@@ -17,6 +17,8 @@ use Laramore\Contracts\Field\{
 
 class Required extends BaseValidation
 {
+    protected static $defaultPriority = self::MAX_PRIORITY;
+
     /**
      * Indicate if the field is for this validation.
      *

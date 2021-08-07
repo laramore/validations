@@ -27,6 +27,8 @@ abstract class BaseValidation extends BaseObserver
      */
     protected $field;
 
+    protected static $defaultPriority = self::MEDIUM_PRIORITY;
+
     public const TYPE_PRIORITY = ((self::MAX_PRIORITY + self::HIGH_PRIORITY) / 2);
     public const CONSTRAINT_PRIORITY = ((self::MIN_PRIORITY + self::LOW_PRIORITY) / 2);
 
@@ -36,7 +38,7 @@ abstract class BaseValidation extends BaseObserver
      * @param Field   $field
      * @param integer $priority
      */
-    protected function __construct(Field $field, int $priority=self::MEDIUM_PRIORITY)
+    protected function __construct(Field $field, int $priority)
     {
         $this->setField($field);
 
@@ -50,9 +52,9 @@ abstract class BaseValidation extends BaseObserver
      * @param integer $priority
      * @return static
      */
-    public static function validation(Field $field, int $priority=self::MEDIUM_PRIORITY)
+    public static function validation(Field $field)
     {
-        return new static($field, $priority);
+        return new static($field, static::$defaultPriority);
     }
 
     /**

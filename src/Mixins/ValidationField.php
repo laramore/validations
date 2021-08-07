@@ -62,7 +62,7 @@ class ValidationField
 
             $name = $this->getName();
             $rules = [
-                $name => \array_map(function ($validation) {
+                $name => array_map(function ($validation) {
                     return $validation->getRule();
                 }, $this->getValidations()),
             ];

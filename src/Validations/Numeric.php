@@ -14,6 +14,8 @@ use Laramore\Contracts\Field\Field;
 
 class Numeric extends BaseValidation
 {
+    protected static $defaultPriority = self::TYPE_PRIORITY;
+
     /**
      * Indicate if the field is for this validation.
      *

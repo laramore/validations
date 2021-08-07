@@ -14,11 +14,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\{
     Arr, Str, Facades\Validator
 };
+use Illuminate\Validation\Validator as ValidationValidator;
+use Laramore\Contracts\Field\Field;
 use Laramore\Observers\{
     BaseManager, BaseHandler
 };
 use Laramore\Contracts\Manager\LaramoreManager;
-use Laramore\Fields\BaseField;
 use Laramore\Fields\Constraint\{
     BaseConstraint, BaseIndexableConstraint, BaseRelationalConstraint
 };
@@ -40,8 +41,10 @@ class ValidationManager extends BaseManager implements LaramoreManager
     protected $handlerClass = ValidationHandler::class;
 
     protected $validatorOptions = [
-        'forbidden', 'negative', 'not_nullable', 'not_zero', 'unsigned',
+        'forbidden', 'negative', 'not_nullable', 'not_zero', 'unsigned', 'index',
     ];
+
+    protected $indexes = [];
 
     /**
      * Generate on demand a validation handler.
@@ -89,10 +92,10 @@ class ValidationManager extends BaseManager implements LaramoreManager
     /**
      * Add all validations for a specific field, based on configurations.
      *
-     * @param BaseField $field
+     * @param Field $field
      * @return void
      */
-    public function createValidationsForField(BaseField $field)
+    public function createValidationsForField(Field $field)
     {
         $handler = $this->getHandler($field->getMeta()->getModelClass());
 
@@ -105,9 +108,9 @@ class ValidationManager extends BaseManager implements LaramoreManager
             ...\array_values($optionsValidations)
         );
 
-        foreach ($validations as $validationClass => $data) {
-            if (!\is_null($data) && $validationClass::isFieldValid($field)) {
-                $handler->add($validationClass::validation($field, Arr::get($data, 'priority', Validation::MEDIUM_PRIORITY)));
+        foreach ($validations as $validationClass) {
+            if ($validationClass::isFieldValid($field)) {
+                $handler->add($validationClass::validation($field));
             }
         }
     }
@@ -207,6 +210,74 @@ class ValidationManager extends BaseManager implements LaramoreManager
     public function validateUnsigned($attribute, $value, $parameters, $validator): bool
     {
         return ((int) $value) >= 0;
+    }
+
+    /**
+     * Validate unsigned validation option.
+     *
+     * @param mixed $attribute
+     * @param mixed $value
+     * @param mixed $parameters
+     * @param mixed $validator
+     *
+     * @return boolean
+     */
+    public function validateIndex($attribute, $value, $parameters, $validator): bool
+    {
+        $id = spl_object_id($validator);
+        $name = preg_replace('/[0-9]+/', '*', $attribute);
+        $parts = explode('.', $name);
+        $attname = end($parts);
+
+        if (! isset($this->indexes[$id])) {
+            $validator->after([$this, 'checkIndexes']);
+        }
+
+        if (! isset($this->indexes[$id][$name])) {
+            $this->indexes[$id][$name] = [
+                'model_class' => $parameters[0],
+                'attributes' => []
+            ];
+        }
+
+        $attributes = &$this->indexes[$id][$name]['attributes'];
+
+        if (! isset($attributes[$attname])) {
+            $attributes[$attname] = [];
+        } else if (in_array($value, $attributes[$attname])) {
+            return false;
+        }
+
+        $attributes[$attname][] = $value;
+
+        return true;
+    }
+
+    public function checkIndexes(ValidationValidator $validator)
+    {
+        if ($validator->errors()->isNotEmpty()) {
+            return false;
+        }
+
+        $id = spl_object_id($validator);
+        $indexes = $this->indexes[$id];
+        $return = true;
+
+        foreach ($indexes as $name => $data) {
+            $query = $data['model_class']::query();
+
+            foreach ($data['attributes'] as $attname => $values) {
+                $query->whereIn($attname, $values);
+            }
+
+            if ($query->count() > 0) {
+                $validator->addFailure($name, 'index');
+
+                $return = false;
+            }
+        }
+
+        return $return;
     }
 
     /**

@@ -26,7 +26,7 @@ return [
 
     ],
     'negative' => [
-        Negative::class => [],
+        Negative::class,
     ],
     'need_lowercase' => [
 
@@ -41,15 +41,13 @@ return [
 
     ],
     'not_blank' => [
-        NotBlank::class => [],
+        NotBlank::class,
     ],
     'not_nullable' => [
-        NotNullable::class => [
-            'priority' => Validation::MAX_PRIORITY,
-        ],
+        NotNullable::class,
     ],
     'not_zero' => [
-        NotZero::class => [],
+        NotZero::class,
     ],
     'nullable' => [
 
@@ -58,9 +56,7 @@ return [
 
     ],
     'required' => [
-        Required::class => [
-            'priority' => Validation::MAX_PRIORITY,
-        ],
+        Required::class,
     ],
     'select' => [
 
@@ -72,7 +68,7 @@ return [
 
     ],
     'unsigned' => [
-        Unsigned::class => [],
+        Unsigned::class,
     ],
     'use_current' => [
 
