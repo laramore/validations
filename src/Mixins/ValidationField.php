@@ -99,7 +99,7 @@ class ValidationField
         return function ($value) {
             /** @var \Laramore\Contracts\Eloquent\Field $this */
             return Validation::getHandler($this->getMeta()->getModelClass())
-                ->getErrors([$this->getName() => $value], true);
+                ->getErrors([$this->getName() => $value]);
         };
     }
 
@@ -113,7 +113,7 @@ class ValidationField
         return function ($value) {
             /** @var \Laramore\Contracts\Eloquent\Field $this */
             return Validation::getHandler($this->getMeta()->getModelClass())
-                ->getValidator([$this->getName() => $value], true)->passes();
+                ->getValidator([$this->getName() => $value])->passes();
         };
     }
 }

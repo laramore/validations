@@ -25,7 +25,7 @@ class ArrayList extends BaseValidation
      */
     public static function isFieldValid(Field $field): bool
     {
-        return $field instanceof Json && $field->collectionType === ValueCollection::LIST_COLLETION;
+        return $field instanceof Json && $field->collectionType === ValueCollection::LIST_COLLECTION;
     }
 
     /**

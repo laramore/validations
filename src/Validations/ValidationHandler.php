@@ -10,9 +10,7 @@
 
 namespace Laramore\Validations;
 
-use Illuminate\Support\{
-    Arr, Facades\Validator
-};
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Validator as ValidatorResult;
 use Laramore\Contracts\Field\Field;
 use Laramore\Observers\{
@@ -115,15 +113,21 @@ class ValidationHandler extends BaseHandler
     {
         $rules = [];
         $validations = $this->all();
+        $meta = $this->observableClass::getMeta();
 
         if (empty($keys)) {
             $keys = array_keys($validations);
         }
 
         foreach ($keys as $key) {
-            $rules[$key] = \array_map(function (BaseValidation $validation) {
-                return $validation->getRule();
-            }, $validations[$key]);
+            // TODO: To fix.
+            // if ($meta->hasField($key)) {
+            //     $rules[$key] = array_merge($rules, $meta->getField($key)->getRules());
+            // } else {
+                $rules[$key] = \array_map(function (BaseValidation $validation) {
+                    return $validation->getRule();
+                }, $validations[$key] ?? []);
+            // }
         }
 
         return $rules;

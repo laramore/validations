@@ -16,8 +16,12 @@ use Laramore\Contracts\Manager\LaramoreManager;
 use Laramore\Elements\OptionManager;
 use Laramore\Traits\Provider\MergesConfig;
 use Laramore\Fields\BaseField;
-use Laramore\Eloquent\Meta;
-use Laramore\Mixins\ValidationField;
+use Laramore\Eloquent\{
+    Meta, BaseModel
+};
+use Laramore\Mixins\{
+    ValidationMeta, ValidationModel, ValidationField
+};
 use Laramore\Validations\ValidationManager;
 
 class ValidationProvider extends ServiceProvider
@@ -81,14 +85,11 @@ class ValidationProvider extends ServiceProvider
      * Add all required macros for validations.
      *
      * @return void
-     */
+    */
     protected function setMacros()
     {
-        Meta::macro('getValidationHandler', function () {
-            /** @var \Laramore\Contracts\Eloquent\LaramoreMeta $this */
-            return Validation::getHandler($this->getModelClass());
-        });
-
+        Meta::mixin(new ValidationMeta);
+        BaseModel::mixin(new ValidationModel);
         BaseField::mixin(new ValidationField);
     }
 

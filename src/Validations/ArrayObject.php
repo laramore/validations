@@ -28,7 +28,7 @@ class ArrayObject extends BaseValidation
      */
     public static function isFieldValid(Field $field): bool
     {
-        return ($field instanceof Json && $field->collectionType === ValueCollection::OBJECT_COLLETION)
+        return ($field instanceof Json && $field->collectionType === ValueCollection::OBJECT_COLLECTION)
             || ($field instanceof RelationField && ! ($field instanceof ManyRelationField));
     }
 
