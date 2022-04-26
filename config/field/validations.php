@@ -38,6 +38,9 @@ return [
     Fields\Enum::class => [
         Validations\Exists::class,
     ],
+    Fields\Hashed::class => [
+        Validations\Text::class,
+    ],
     Fields\Increment::class => [
         Validations\Numeric::class,
     ],
