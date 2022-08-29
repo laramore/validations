@@ -68,7 +68,7 @@ return [
     Fields\Password::class => [
         Validations\Pattern::class,
     ],
-    Fields\PrimaryId::class => [
+    Fields\PrimaryIncrement::class => [
 
     ],
     Fields\Reversed\BelongsToMany::class => [
